@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@teachablemachine/pose": "^0.8.6"
+  }
+}

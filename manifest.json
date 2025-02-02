@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "Posture Corrector - CHROME EXTENSION",
+    "description": "This extension will ensure that you are always in correct posture during long hours of sitting.",
+    "version": "1.0",
+    "permissions": [
+      "scripting",
+      "activeTab"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],  
+        "js": ["./node_modules/@tensorflow/tfjs/dist/tf.min.js"]         
+      },
+      {
+        "matches": ["<all_urls>"],   
+        "js": ["./node_modules/@teachablemachine/pose/dist/teachablemachine-pose.min.js"]        
+      },
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+      
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "my_model/*",
+          "audio/*"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ]
+  }
+  
