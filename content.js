@@ -91,16 +91,12 @@ async function predict() {
 
     // Check for "incorrect posture" in the predictions
     let incorrectPostureDetected = false;
-
     for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
         labelContainer.childNodes[i].innerHTML = classPrediction;
 
-        // If the posture is classified as "incorrect posture" with high confidence
-        if (prediction[i].className === "Incorrect_Posture" && prediction[i].probability > 0.8) {
+        if (prediction[i].className !== "Correct_Posture" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
-        } else {
-            incorrectPostureDetected = false;
         }
     }
 

@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@teachablemachine/pose": "^0.8.6"
+    "@teachablemachine/pose": "^0.8.6",
+    "chart.js": "^4.4.7"
   }
 }

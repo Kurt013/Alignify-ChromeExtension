@@ -7,6 +7,9 @@
       "scripting",
       "activeTab"
     ],
+    "action": {
+      "default_popup": "popup.html"
+    },
     "background": {
       "service_worker": "background.js"
     },
@@ -32,7 +35,7 @@
       {
         "resources": [
           "my_model/*",
-          "audio/*"
+          "assets/notif_sound.mp3"
         ],
         "matches": ["<all_urls>"]
       }
