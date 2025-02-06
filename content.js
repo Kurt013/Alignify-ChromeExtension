@@ -68,15 +68,6 @@ async function init() {
     // canvasElement.style.display = 'none'; 
     document.body.appendChild(canvasWrapper);  
 
-
-
-        
-
-
-
-
-
-
     const popupElement = document.createElement('dialog');
     const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
 
@@ -193,9 +184,7 @@ async function predict() {
         if (prediction[i].className !== "Correct_Posture" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
         }
-        else {
-            incorrectPostureDetected = false;
-        }
+    
     }
 
     // Show or hide the dialog based on incorrect posture detection

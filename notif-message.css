@@ -87,6 +87,7 @@
 .content p {
     font-family: 'Epilogue-Regular';
     width: 234px;
+    font-size: 16px;
     margin-inline: auto;
 }
 
@@ -211,6 +212,7 @@
     font-family: 'PoiretOne-Regular';
     border-radius: 0 20px 20px 0;
     font-weight: 400;
+    text-overflow: inherit !important;
 }
 
 
