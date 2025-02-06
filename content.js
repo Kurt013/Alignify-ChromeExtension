@@ -105,9 +105,8 @@ async function init() {
                 <img src="${warningLogo}" alt="Warning Icon">
             </div>
             <div class="content">
-                <h1>Leaning Sideways</h1>
-                <p>Shift your weight back to
-                    the center-long shifts feel better with even posture!</p>
+                <h1 id="header-warning"></h1>
+                <p id="content-warning"></p>
             </div>
         </div>
     `;
@@ -181,8 +180,26 @@ async function predict() {
 
         labelContainer.children[i].innerHTML = classPrediction;
 
-        if (prediction[i].className !== "Correct_Posture" && prediction[i].probability > 0.8) {
+        if (prediction[i].className === "Slouching_Forward" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
+            document.getElementById("header-warning").innerText = "Slouching Forward";
+            document.getElementById("content-warning").innerText = "Leaning in too much? Adjust your posture to stay comfortable during long calls.";
+        } else if (prediction[i].className === "Leaning_Back" && prediction[i].probability > 0.8) {
+            incorrectPostureDetected = true;
+            document.getElementById("header-warning").innerText = "Leaning Back";
+            document.getElementById("content-warning").innerText = "You're leaning too far back—sit upright for a more engaging call presence!";
+        } else if (prediction[i].className === "Leaning_Sideway" && prediction[i].probability > 0.8) {
+            incorrectPostureDetected = true;
+            document.getElementById("header-warning").innerText = "Leaning Sideway";
+            document.getElementById("content-warning").innerText = "Shift your weight back to the center—long shifts feel better with even posture!";
+        } else if (prediction[i].className === "No_Person" && prediction[i].probability > 0.8) {
+            incorrectPostureDetected = true;
+            document.getElementById("header-warning").innerText = "No person";
+            document.getElementById("content-warning").innerText = "Tracking paused—resume when you're back at your station.";
+        } else if (prediction[i].className === "Head_Drooping" && prediction[i].probability > 0.8) {
+            incorrectPostureDetected = true;
+            document.getElementById("header-warning").innerText = "Head Drooping (Drowsy)";
+            document.getElementById("content-warning").innerText = "Fatigue setting in? A quick stretch or water break can help you refresh!";
         }
     
     }
