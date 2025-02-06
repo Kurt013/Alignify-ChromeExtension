@@ -11,12 +11,71 @@ async function init() {
     audioElement.id = 'alertSound';
     document.body.appendChild(audioElement);
 
-    const canvasWrapper = document.createElement('div');  
-    const canvasElement = document.createElement('canvas');  
-    canvasElement.id = 'canvas';
-    canvasElement.style.display = 'none'; 
-    canvasWrapper.appendChild(canvasElement); 
+
+
+
+    const canvasWrapper = document.createElement('dialog');
+    canvasWrapper.id = 'setting-popup';
+    canvasWrapper.classList.add('setting-popup-container');
+    
+    canvasWrapper.innerHTML = `
+        <div class="setting-popup">
+            <button id="exit" class="exit-btn">
+                <img src="${chrome.runtime.getURL('icons/exit.svg')}">
+            </button>
+            <div class="header-setting">
+                <h1>Settings</h1>
+            </div>
+            <div id="camera-container" class="camera-container">
+                <div class="check-icon">
+                    <img src="${chrome.runtime.getURL('icons/check.svg')}">
+                </div>
+                <canvas id="canvas" class="camera" width="260" height="260"></canvas>
+                <div class="edit-prof">
+                    <p>KurtyKurt13</p>
+                    <button class="edit" id="edit"><img src="${chrome.runtime.getURL('icons/pencil.svg')}"></button>
+                </div>
+            </div>
+            <div class="camera-message">
+                <p>Adjust your posture</p>
+            </div>
+            <div class="settings">
+                <div class="sound">
+                    <p>Sound</p>
+                    <label class="soundL">
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                    </label>
+                </div>
+                <div class="sensitivity">
+                    <p>Sensitivity</p>
+                    <label class="sensitivityL">
+                        <input type="range" id="sensitivity" min="0.5" max="1" step="0.01" value="0.8">
+                    </label>
+                </div>
+            </div>
+            <div class="button-section">
+                <button id="back" class="back">
+                    Back
+                </button>
+                <button id="save" class="save">
+                    Save
+                </button>
+            </div>
+        </div>
+    `;
+    
+
+    // canvasElement.style.display = 'none'; 
     document.body.appendChild(canvasWrapper);  
+
+
+
+        
+
+
+
+
+
 
     const popupElement = document.createElement('dialog');
     const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
@@ -76,17 +135,6 @@ async function init() {
             </div>
         </div>
     `;
-    // labelElement.id = 'label-container';  // Set the wrapper id
-    // labelElement.style.cssText = `
-    //     position: fixed;
-    //     bottom: 10px;
-    //     right: 10px;
-    //     background-color: rgba(0, 0, 0, 0.7);
-    //     color: white;
-    //     padding: 10px;
-    //     border-radius: 5px;
-    //     z-index: 1000;
-    // `;
 
 
     document.body.appendChild(labelElement);  // Append the wrapper to the body
@@ -95,18 +143,16 @@ async function init() {
     model = await tmPose.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
 
+    const canvas = document.getElementById("canvas");
+
     // Convenience function to setup a webcam
-    const size = 200;
     const flip = true; // whether to flip the webcam
-    webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
+    webcam = new tmPose.Webcam(canvas.width, canvas.height, flip); // width, height, flip
     await webcam.setup(); // request access to the webcam
     await webcam.play();
     window.requestAnimationFrame(loop);
 
     // At this point, canvas has already been appended to the body
-    const canvas = document.getElementById("canvas");
-    canvas.width = size; 
-    canvas.height = size;
     ctx = canvas.getContext("2d");
     labelContainer = document.getElementById("label-container");
 
@@ -147,6 +193,9 @@ async function predict() {
         if (prediction[i].className !== "Correct_Posture" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
         }
+        else {
+            incorrectPostureDetected = false;
+        }
     }
 
     // Show or hide the dialog based on incorrect posture detection
@@ -157,6 +206,9 @@ async function predict() {
         postureState = false; // Set posture state to correct
         hideDialog(); // Hide dialog
     }
+
+    document.getElementById('setting-popup').showModal();
+
 
     // finally draw the poses
     drawPose(pose);

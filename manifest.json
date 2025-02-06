@@ -45,7 +45,7 @@
         "resources": [
           "my_model/*",
           "assets/notif_sound.mp3",
-          "icons/warning.svg",
+          "icons/*",
           "fonts/*"
         ],
         "matches": ["<all_urls>"]
