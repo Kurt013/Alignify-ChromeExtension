@@ -104,4 +104,25 @@ document.addEventListener('DOMContentLoaded', function() {
         weekBtn.classList.remove('current-tab');
         monthBtn.classList.add('current-tab');        
     });
+
+
+
+
+    const messages = [
+        "You're doing great! Keep it up!",
+        "Keep up the amazing work!",
+        "You're making awesome progress!",
+        "You're doing fantastic!",
+        "You're on fire! Keep pushing forward!"
+    ];
+    
+    const message = document.getElementById('messages');
+
+    message.innerHTML = getRandomMessage();
+
+
+    function getRandomMessage() {
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+    
 });

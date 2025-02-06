@@ -234,7 +234,7 @@ async function predict() {
         hideDialog(); // Hide dialog
     }
 
-    document.getElementById('setting-popup').showModal();
+    // document.getElementById('setting-popup').showModal();
 
 
     // finally draw the poses
