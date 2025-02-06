@@ -9,31 +9,57 @@ async function init() {
     const audioElement = document.createElement('audio');
     audioElement.src = chrome.runtime.getURL('./assets/notif_sound.mp3');
     audioElement.id = 'alertSound';
-    document.body.appendChild(audioElement); // Add audio to body
+    document.body.appendChild(audioElement);
 
-    // Create a hidden canvas element dynamically with an ID of 'canvas' and append it to the body
-    const canvasWrapper = document.createElement('div');  // Create a wrapper div
-    const canvasElement = document.createElement('canvas');  // Create the canvas element
+    const canvasWrapper = document.createElement('div');  
+    const canvasElement = document.createElement('canvas');  
     canvasElement.id = 'canvas';
-    canvasElement.style.display = 'none';  // Set the canvas id
-    canvasWrapper.appendChild(canvasElement);  // Append the canvas to the wrapper
-    document.body.appendChild(canvasWrapper);  // Append the wrapper (and canvas) to the body
+    canvasElement.style.display = 'none'; 
+    canvasWrapper.appendChild(canvasElement); 
+    document.body.appendChild(canvasWrapper);  
 
     const popupElement = document.createElement('dialog');
-    popupElement.id = 'popup';
-    popupElement.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        z-index: 1000;
+    const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
+
+    // Load the fonts
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+        @font-face {
+            font-family: 'Epilogue-Regular';
+            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Regular.ttf')}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Epilogue-Light';
+            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Light.ttf')}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Epilogue-ExtraLight';
+            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-ExtraLight.ttf')}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'PoiretOne-Regular';
+            src: url('${chrome.runtime.getURL('fonts/PoiretOne-Regular.ttf')}') format('truetype');
+        }
     `;
+    document.head.appendChild(styleElement);
+
+
+    popupElement.id = 'notif-popup';
+    popupElement.className = 'popup-container';
     popupElement.innerHTML = `
-        <h1>Incorrect Posture Detected!</h1>
-        <p>Please correct your posture to avoid strain.</p>
+        <div class="notif-popup">
+            <div class="icon">
+                <img src="${warningLogo}" alt="Warning Icon">
+            </div>
+            <div class="content">
+                <h1>Leaning Sideways</h1>
+                <p>Shift your weight back to
+                    the center-long shifts feel better with even posture!</p>
+            </div>
+        </div>
     `;
     document.body.appendChild(popupElement); // Add dialog to body
 
@@ -126,13 +152,13 @@ function drawPose(pose) {
 }
 
 function showDialog() {
-    const popup = document.getElementById('popup');
+    const popup = document.getElementById('notif-popup');
     popup.showModal(); // Show the dialog box
     playSound(); // Play the alert sound
 }
 
 function hideDialog() {
-    const popup = document.getElementById('popup');
+    const popup = document.getElementById('notif-popup');
     popup.close(); // Close the dialog box
 }
 

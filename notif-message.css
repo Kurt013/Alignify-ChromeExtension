@@ -1,0 +1,364 @@
+.notif-popup *, .param-popup *, .setting-popup-container * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+:root {
+    --light-yellow: #F9F6E6;
+    --dark-purple: #8D77AB;
+    --green: #BAD8B6;
+    --light-green: #E1EACD;
+}
+
+.popup-container {
+    border: none;
+    overflow: visible !important;
+    padding: 0;
+    border-radius: 10px;
+}
+
+.notif-popup {
+    border: none;
+    width: 330px;
+    background-color: var(--light-yellow);
+    padding-bottom: 60px;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.popup-container:focus {
+    outline: none;
+}
+
+.notif-popup::after {
+    content: '';
+    width: 100%;
+    height: 25px;
+    background-color: var(--dark-purple);
+    position: absolute;
+    bottom: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.notif-popup .icon {
+    background-color: var(--light-yellow);
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 180px;
+    height: 180px;
+    position: absolute;
+    top: -100px;
+    filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.214));
+}
+
+.notif-popup .icon::after {
+    content: '';
+    height: 160px;
+    width: 160px;
+    border: 4px solid var(--green);
+    background-color: transparent;
+    position: absolute;
+    border-radius: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.content {
+    text-align: center;
+}
+
+.content h1 {
+    font-family: 'PoiretOne-Regular';
+    font-weight: 400;
+    font-size: 36px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+.content p {
+    font-family: 'Epilogue-Regular';
+    width: 234px;
+    margin-inline: auto;
+}
+
+
+
+
+
+
+/*  Parameter Popup  */
+.param-popup {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    height: 180px;
+    width: 309px;
+    background-color: var(--light-yellow);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.header {
+    background-color: var(--light-green);
+    padding: 8px;
+    height: 43px;
+}
+
+.header h1 {
+    font-family: 'PoiretOne-Regular';
+    font-size: 20px;
+    text-align: center;
+    font-weight: 400;
+}
+
+.content-param-container {
+    padding: 20px;
+}
+
+.content-param div + div {
+    padding-top: 8px;
+}
+
+.content-param p {
+    width: 120px;
+    text-align: end;
+    font-size: 12px;
+    font-family: 'Epilogue-Regular';
+    padding-right: 10px;
+}
+
+.param {
+    display: flex;
+}
+
+.bar {
+    flex: 1;
+    width: 100%;
+    background-color: var(--dark-purple);
+}
+
+
+/* Settings Popup */
+.setting-popup-container {
+    border: none;
+    overflow: visible !important;
+    position: relative;
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.setting-popup {
+    background-color: white;
+    width: 321px;
+    height: 447px;
+    position: relative;
+    border-radius: 10px;
+}
+
+.setting-popup::after {
+    content: '';
+    width: 100%;
+    height: 16px;
+    background-color: var(--dark-purple);
+    position: absolute;
+    bottom: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.exit-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.exit-btn:focus {
+    outline: none;
+}
+
+
+.header-setting {
+    padding-top: 10px;
+}
+
+.header-setting h1 {
+    width: 138px;
+    background-color: var(--light-yellow);
+    font-size: 32px;
+    padding: 10px 20px;
+    font-family: 'PoiretOne-Regular';
+    border-radius: 0 20px 20px 0;
+    font-weight: 400;
+}
+
+
+.camera-container {
+    position: relative;
+    padding-top: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.check-icon {
+    position: absolute;
+    top: 36px;
+    right: 40px;
+}
+
+.hide-check {
+    display: none;
+}
+
+.camera {
+    width: 260px;
+    padding-top: 40px;
+    height: 180px;
+    background-color: gray;
+    border-radius: 6px;
+}
+
+.edit-prof {
+    display: flex;
+    font-family: 'Epilogue-Regular';
+    font-size: 12px;
+    align-items: center;
+    min-width: 106px;
+    background-color: var(--light-green);
+    position: absolute;
+    bottom: 15px;
+    height: 27px;
+    border-radius: 20px;
+}
+
+.edit-prof p {
+    flex: 1;
+    text-align: center;
+}
+
+.edit-prof button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+}
+
+
+.camera-message  {
+    text-align: center;
+    font-family: 'Epilogue-Light';
+    font-size: 12px;
+    padding-bottom: 20px;
+}
+
+.camera-message p {
+    min-height: 15px;
+}
+
+.settings {
+    font-family: 'Epilogue-Regular';
+    font-size: 10px;
+    width: 256px;
+    margin-inline: auto;
+}
+
+.sound, .sensitivity {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 15px;
+}
+
+.sound p, .sensitivity p {
+    flex-basis: 80px;
+    text-align: end;
+    padding-right: 30px;
+}
+
+.soundL, .sensitivityL {
+    flex: 1;
+    width: 100%;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--light-green);
+    outline: none;
+    border-radius: 5px;
+}
+
+.button-section {
+    text-align: center;
+    padding-top: 30px;
+}
+
+.back, .save {
+    text-transform: uppercase;
+    width: 94px;
+    height: 36px;
+    font-family: 'Epilogue-ExtraLight';
+    border-radius: 5px;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.back {
+    background-color: var(--light-green);
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+.save-active {
+    background-color: var(--green);
+    cursor: pointer;
+}
+
+.back:hover, .save-active:hover {
+    background-color: var(--light-yellow);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+}
+
+input[type="range"]::-ms-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+}
