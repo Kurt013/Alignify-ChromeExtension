@@ -283,6 +283,7 @@ body {
     background-color: transparent;
     border: none;
     border-bottom: 5px solid transparent;
+    cursor: pointer;
     transition: border-bottom 0.1s;
 }
 

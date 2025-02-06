@@ -1,6 +1,6 @@
         const ctx = document.getElementById('myChart');
-        const dataValues = [11, 16, 9, 13, 6, 7, 13, 20, 4, 6, 3, 1, 2, 0.1]; 
-        const offset = 3; 
+        const dataValues = [2, 7.2, 7.1, 6.3, 6, 7, 3, 6.3, 4, 1, 0.5, 0.4, 0.3, 0.1]; 
+        const offset = 0; 
         let offsetData; 
         offsetData = dataValues.map(value => value + offset); 
 
