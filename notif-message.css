@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    color: black;
 }
 
 
@@ -99,7 +100,7 @@
     position: fixed;
     bottom: 10px;
     right: 10px;
-    height: 180px;
+    min-height: 180px;
     width: 309px;
     background-color: var(--light-yellow);
     border-radius: 6px;
@@ -139,9 +140,13 @@
     display: flex;
 }
 
-.bar {
+.bar-container {
     flex: 1;
     width: 100%;
+}
+
+.bar {
+    height: 100%;
     background-color: var(--dark-purple);
 }
 

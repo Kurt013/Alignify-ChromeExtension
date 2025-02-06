@@ -64,19 +64,33 @@ async function init() {
     document.body.appendChild(popupElement); // Add dialog to body
 
     const labelElement = document.createElement('div');  // Create a wrapper div
-    labelElement.id = 'label-container';  // Set the wrapper id
-    labelElement.style.cssText = `
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        z-index: 1000;
-    `;
-    document.body.appendChild(labelElement);  // Append the wrapper to the body
+    labelElement.id = 'param-popup';
+    labelElement.classList.add('param-popup');
+    labelElement.innerHTML = `
+        <div class="header">
+            <h1>Posture Classification</h1>
+        </div>
+        <div class="content-param-container">
+            <div id="label-container" class="content-param">
 
+            </div>
+        </div>
+    `;
+    // labelElement.id = 'label-container';  // Set the wrapper id
+    // labelElement.style.cssText = `
+    //     position: fixed;
+    //     bottom: 10px;
+    //     right: 10px;
+    //     background-color: rgba(0, 0, 0, 0.7);
+    //     color: white;
+    //     padding: 10px;
+    //     border-radius: 5px;
+    //     z-index: 1000;
+    // `;
+
+
+    document.body.appendChild(labelElement);  // Append the wrapper to the body
+    
     // Load the model and metadata
     model = await tmPose.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
@@ -98,7 +112,10 @@ async function init() {
 
     // Create label elements for each class prediction
     for (let i = 0; i < maxPredictions; i++) { // and class labels
-        labelContainer.appendChild(document.createElement("div"));
+        const labelDiv = document.createElement("div");
+        labelDiv.classList.add("param");
+        labelContainer.appendChild(labelDiv);
+
     }
 }
 
@@ -118,8 +135,14 @@ async function predict() {
     // Check for "incorrect posture" in the predictions
     let incorrectPostureDetected = false;
     for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
-        labelContainer.childNodes[i].innerHTML = classPrediction;
+        const classPrediction = `
+            <p>${prediction[i].className}</p>
+            <div class="bar-container">
+                <div class="bar" style="width: ${(prediction[i].probability * 100).toFixed(2)}%;"></div>
+            </div>
+        `;
+
+        labelContainer.children[i].innerHTML = classPrediction;
 
         if (prediction[i].className !== "Correct_Posture" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
