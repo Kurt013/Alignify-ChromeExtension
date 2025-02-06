@@ -128,6 +128,10 @@ body {
     align-items: center;
 }
 
+.message p {
+    font-size: 16px;
+}
+
 .smile-container {
     padding-top: 3px;
 }
