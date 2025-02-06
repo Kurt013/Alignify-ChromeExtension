@@ -235,3 +235,26 @@ function playSound() {
 
 // Call the initialize function to load the model and setup everything
 init();
+
+
+
+// Function to toggle visibility
+function updatePopupVisibility(show) {
+    const paramPopup = document.getElementById("param-popup");
+    if (paramPopup) {
+        paramPopup.style.display = show ? "block" : "none";
+    }
+    console.log("showParameters: ", show);
+}
+
+// Load stored setting when content script runs
+chrome.storage.sync.get(["showParameters"], (data) => {
+    updatePopupVisibility(data.showParameters ?? true);
+});
+
+// Listen for messages from popup
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.showParameters !== undefined) {
+        updatePopupVisibility(message.showParameters);
+    }
+});
