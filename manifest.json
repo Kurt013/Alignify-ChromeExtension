@@ -21,12 +21,7 @@
       {
         "matches": ["<all_urls>"],   
         "js": ["./node_modules/@teachablemachine/pose/dist/teachablemachine-pose.min.js"]        
-      },
-      {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
       }
-      
     ],
     "host_permissions": [
       "<all_urls>"

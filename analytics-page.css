@@ -1,0 +1,347 @@
+@keyframes fireGradient {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@font-face {
+    font-family: 'Epilogue-Regular';
+    src: url('./fonts/static/Epilogue-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Epilogue-SemiBold';
+    src: url('./fonts/static/Epilogue-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Epilogue-ExtraLight';
+    src: url('./fonts/static/Epilogue-ExtraLight.ttf') format('truetype');
+}
+
+
+@font-face {
+    font-family: 'PoiretOne-Regular';
+    src: url('./fonts/PoiretOne-Regular.ttf') format('truetype');
+}
+
+
+:root {
+    --light-yellow: #F9F6E6;
+    --dark-purple: #8D77AB;
+    --green: #BAD8B6;
+    --light-green: #E1EACD;
+}
+
+*, ::before, ::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: 'Epilogue-Regular';
+}
+
+.side-panel {
+    flex-basis: 450px;
+    background-color: #8D77AB;
+    padding-block: 20px;
+    padding-inline: 15px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+}
+
+.streak {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    padding:20px;
+    row-gap: 30px;
+}
+
+.streak-icon {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+
+.circle {
+    box-shadow: 0 0 0 10px var(--light-yellow);
+    position: relative;
+    background-image: linear-gradient(to bottom, #FFE500 0%,
+        #FF7700 100%);
+    border-radius: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 15px;
+    min-width: 350px;
+    min-height: 350px;
+    z-index: 1;
+    aspect-ratio: 1/1;
+}
+
+
+.circle::after {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    max-width: 310px;
+    max-height: 310px;
+    background-color: white;
+    border-radius: 100%;
+}
+
+
+.streak-icon p {
+    font-size: 20px;
+    text-transform: uppercase;
+    font-family: 'Epilogue-SemiBold';
+}
+
+.message {
+    display: flex;
+    justify-content: center;
+    background-color: var(--light-yellow);
+    width: 100%;
+    column-gap: 4.5px;
+    padding-block: 20px;
+    border-radius: 20px;
+    align-items: center;
+}
+
+.smile-container {
+    padding-top: 3px;
+}
+
+.left-achievements {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  
+}
+
+
+.achievements {
+    background-color: white;
+    border-radius: 20px;
+    display: flex;
+    column-gap: 5px;
+    min-height: 150px;
+}
+
+.achievements-container {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+    margin-top: 16px;
+    padding-inline: 15px;
+    padding-block: 8px;
+    border-radius: 0 20px 20px 0;
+    background-color: var(--light-yellow);
+}
+
+.achievements-container h2 {
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-size: 16px;
+    font-family: 'Epilogue-SemiBold';
+    font-weight: 400;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+.profiles-container {
+    z-index: 2;
+}
+
+.profile p {
+    z-index: 1;
+    padding: 8px 8px 8px 20px;
+    background-color: var(--light-green);
+    border-radius: 0 20px 20px 0;
+    margin-left: -10px;
+    font-size: 14px;
+}
+
+.right-achievements {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    text-align: center;
+    padding-bottom: 10px;
+    justify-content: space-around;
+}
+
+.highest-record, .highest-streak {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.highest-record .score, .highest-streak .score {
+    height: 90px;
+    width: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    font-size: 30px;
+    position: relative;
+}
+
+.highest-record .score {
+    background-color: var(--green);
+}
+
+.highest-streak .score {
+    background-color: var(--light-green);
+}
+
+.highest-record .score span,
+.highest-streak .score span {
+    font-size: 14px;
+    font-family: 'Epilogue-ExtraLight';
+    margin-top: -5px;
+}
+
+.right-achievements h3 {
+    padding-top: 5px;
+    line-height: 1;
+    font-family: 'Epilogue-Regular';
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.right-achievements h3 span {
+    font-size: 12px;
+}
+
+.main-panel {
+    flex: 1;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    text-align: center;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.main-panel h1 {
+    font-family: 'PoiretOne-Regular';
+    font-size: 40px;
+    font-weight: 400;
+    padding-bottom: 50px;
+}
+
+.main-panel nav {
+    padding-bottom: 20px;
+}
+
+.main-panel nav ul{
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+}
+
+.main-panel nav ul li button {
+    color: black;
+    font-size: 24px;
+    display: inline-block;
+    height: 40px;
+    width: 100px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 5px solid transparent;
+    transition: border-bottom 0.1s;
+}
+
+.main-panel nav ul li button:hover {
+    border-bottom: 5px solid #8D77AB;
+}
+
+.current-tab {
+    border-bottom: 5px solid #8D77AB !important;
+}
+
+.graph {
+    max-width: 800px;
+    width: 100%;
+    margin-inline: auto;
+    overflow-x: auto;
+    scrollbar-width: none;  
+}
+
+@media (max-width: 1315px) {
+    .graph {
+        max-width: 700px;
+    }    
+}
+
+@media (max-width: 1180px) {
+    .graph {
+        max-width: 600px;
+    }    
+}
+
+@media (max-width: 1100px) {
+    .graph {
+        max-width: 500px;
+    }    
+}
+
+#myChart {
+    height: 440px !important;
+    padding-bottom: 20px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.note-message {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+}
+
+.note-message p {
+    font-size: 20px;
+    background-color: var(--light-yellow);
+    max-width: 800px;
+    width: 100%;
+    margin-inline: auto;
+    padding: 20px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+

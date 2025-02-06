@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIGNIFY | Analytics Page</title>
+    
+    <link rel="stylesheet" href="analytics-page.css">
+</head>
+<body>
+    <div class="side-panel">
+        <div class="streak">
+            <div class="streak-icon">
+                <div class="circle">
+                    <div class="fire-icon">
+                        <img src="./icons/Fire.svg" alt="fire-icon">
+                    </div>
+                    <p>1 day streak</p>
+                </div>
+            </div>
+            <div class="message">
+                <div class="smile-container">
+                    <img src="./icons/bxs-flame.svg" alt="">
+                </div>
+                <p>You're doing great! Keep it up!</p>
+            </div>
+        </div>
+        <div class="achievements">
+            <div class="left-achievements">
+                <div class="achievements-container">
+                    <h2>Achievements</h2>
+                    <div class="medal-container">
+                        <img src="./icons/medal.svg">
+                    </div>
+                </div>
+                <div class="profile">
+                    <div class="profiles-container">
+                        <img src="./icons/profile-icon.svg" alt="">
+                    </div>
+                    <p>KurtyKurt13</p>
+                </div>
+            </div>
+            <div class="right-achievements">
+                <div class="highest-record">
+                    <div class="score">
+                        7 <span>hours</span>
+                    </div>
+                    <h3>
+                        <span>Highest</span> 
+                        <br> Record
+                    </h3>
+                </div>
+                <div class="highest-streak">
+                    <div class="score">
+                        7 <span>days</span>
+                    </div>
+                    <h3>
+                        <span>Highest</span> 
+                        <br> Streak Count
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-panel">
+        <h1>Today's Goal: 2.2 / 8 hrs</h1>
+        <nav>
+            <ul>
+                <li><button id="day" class="current-tab">Day</button></li>
+                <li><button id="week">Week</button></li>
+                <li><button id="month">Month</button></li>
+            </ul>
+        </nav>
+        <div class="graph" dir="rtl">
+            <canvas id="myChart" width="1400px" height="510px"></canvas>
+        </div>
+        <div class="note-message">
+            <p>Note: Your most frequent incorrect posture is Leaning Sideways.</p>
+        </div>
+    </div>
+    <script src="./node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="./analytics-page.js"></script>
+</body>
+</html>
