@@ -80,6 +80,7 @@ document.head.appendChild(styleElement);
     // Get the settings dialog
     const settingsDialog = document.getElementById("setting-popup");
 
+
     // Listen for messages from popup.js
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.action === "toggleSettings") {
@@ -110,5 +111,8 @@ document.head.appendChild(styleElement);
     backButton.addEventListener("click", () => {
         settingsDialog.close();
     });
+
+
+   
 
     

@@ -69,12 +69,23 @@ async function init() {
         const labelDiv = document.createElement("div");
         labelDiv.classList.add("param");
         labelContainer.appendChild(labelDiv);
-
     }
+
+    
 }
 
 async function loop(timestamp) {
-    webcam.update(); // update the webcam frame
+    const settingsPopup = document.getElementById("setting-popup");
+    const paramPopup = document.getElementById("param-popup");
+
+    if (settingsPopup.open) {
+        paramPopup.style.display = "none";
+
+        hideDialog();
+        pauseSound();
+    }
+
+    webcam.update();
     await predict();
     window.requestAnimationFrame(loop);
 }   
@@ -106,7 +117,7 @@ async function predict() {
             incorrectPostureDetected = true;
             document.getElementById("header-warning").innerText = "Leaning Back";
             document.getElementById("content-warning").innerText = "You're leaning too far back—sit upright for a more engaging call presence!";
-        } else if (prediction[i].className === "Leaning_Sideway" && prediction[i].probability > 0.8) {
+        } else if (prediction[i].className === "Leaning_Sideways" && prediction[i].probability > 0.8) {
             incorrectPostureDetected = true;
             document.getElementById("header-warning").innerText = "Leaning Sideway";
             document.getElementById("content-warning").innerText = "Shift your weight back to the center—long shifts feel better with even posture!";
@@ -124,9 +135,13 @@ async function predict() {
 
     // Function to toggle visibility
     function updatePopupVisibility(show) {
-        const paramPopup = document.getElementById("param-popup");
-        if (paramPopup) {
-            paramPopup.style.display = show ? "block" : "none";
+        const settingsPopup = document.getElementById("setting-popup");
+
+        if (!settingsPopup.open) {
+            const paramPopup = document.getElementById("param-popup");
+            if (paramPopup) {
+                paramPopup.style.display = show ? "block" : "none";
+            }
         }
     }
 
@@ -183,6 +198,12 @@ function hideDialog() {
 function playSound() {
     const sound = document.getElementById("alertSound");
     sound.play();
+}
+
+function pauseSound() {
+    const sound = document.getElementById("alertSound");
+    sound.pause();
+    alertSound.currentTime = 0;
 }
 
 
