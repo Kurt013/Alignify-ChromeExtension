@@ -1,15 +1,3 @@
-@keyframes fireGradient {
-    0% {
-        background-position: 0% 0%;
-    }
-    50% {
-        background-position: 100% 100%;
-    }
-    100% {
-        background-position: 0% 0%;
-    }
-}
-
 @font-face {
     font-family: 'Epilogue-Regular';
     src: url('./fonts/static/Epilogue-Regular.ttf') format('truetype');

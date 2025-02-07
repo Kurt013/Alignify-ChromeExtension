@@ -1,4 +1,29 @@
- // Create the dialog element for the settings
+// Load the fonts
+const styleElement = document.createElement('style');
+styleElement.innerHTML = `
+    @font-face {
+        font-family: 'Epilogue-Regular';
+        src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Regular.ttf')}') format('truetype');
+    }
+
+    @font-face {
+        font-family: 'Epilogue-Light';
+        src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Light.ttf')}') format('truetype');
+    }
+
+    @font-face {
+        font-family: 'Epilogue-ExtraLight';
+        src: url('${chrome.runtime.getURL('fonts/static/Epilogue-ExtraLight.ttf')}') format('truetype');
+    }
+
+    @font-face {
+        font-family: 'PoiretOne-Regular';
+        src: url('${chrome.runtime.getURL('fonts/PoiretOne-Regular.ttf')}') format('truetype');
+    }
+`;
+document.head.appendChild(styleElement);
+
+// Create the dialog element for the settings
  const canvasWrapper = document.createElement('dialog');
  canvasWrapper.id = 'setting-popup';
  canvasWrapper.classList.add('setting-popup-container');
@@ -50,4 +75,40 @@
  `;
  
 
- document.body.appendChild(canvasWrapper);  
+    document.body.appendChild(canvasWrapper);  
+
+    // Get the settings dialog
+    const settingsDialog = document.getElementById("setting-popup");
+
+    // Listen for messages from popup.js
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.action === "toggleSettings") {
+            if (settingsDialog) {
+                if (settingsDialog.open) {
+                    settingsDialog.close(); // Close if already open
+                } else {
+                    settingsDialog.showModal(); // Open as modal
+                }
+            }
+        }
+    });
+
+    // Get the exit button
+    const exitButton = document.getElementById("exit");
+    exitButton.addEventListener("click", () => {
+        settingsDialog.close();
+    });
+
+    // Get the save button
+    const saveButton = document.getElementById("save");
+    saveButton.addEventListener("click", () => {
+        settingsDialog.close();
+    });
+
+    // Get the back button
+    const backButton = document.getElementById("back");
+    backButton.addEventListener("click", () => {
+        settingsDialog.close();
+    });
+
+    

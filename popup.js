@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const toggleParameters = document.getElementById("toggleParameters");
     const toggleStart = document.getElementById("toggleStart");
+    const toggleSettings = document.getElementById("toggleSettings");
 
     // Load the saved state from storage
     chrome.storage.sync.get(["showParameters", "startNow"], (data) => {
@@ -23,4 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    toggleSettings.addEventListener("click", () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs.length > 0) {
+                chrome.tabs.sendMessage(tabs[0].id, { action: "toggleSettings" });
+            }
+        });
+    });
+
 });

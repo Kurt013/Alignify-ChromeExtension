@@ -14,31 +14,6 @@ async function init() {
     const popupElement = document.createElement('dialog');
     const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
 
-    // Load the fonts
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = `
-        @font-face {
-            font-family: 'Epilogue-Regular';
-            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Regular.ttf')}') format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Epilogue-Light';
-            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-Light.ttf')}') format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Epilogue-ExtraLight';
-            src: url('${chrome.runtime.getURL('fonts/static/Epilogue-ExtraLight.ttf')}') format('truetype');
-        }
-
-        @font-face {
-            font-family: 'PoiretOne-Regular';
-            src: url('${chrome.runtime.getURL('fonts/PoiretOne-Regular.ttf')}') format('truetype');
-        }
-    `;
-    document.head.appendChild(styleElement);
-
 
     popupElement.id = 'notif-popup';
     popupElement.className = 'popup-container';
@@ -177,7 +152,6 @@ async function predict() {
         hideDialog(); 
     }
 
-    document.getElementById('setting-popup').showModal();
 
     drawPose(pose);
 }

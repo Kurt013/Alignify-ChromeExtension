@@ -155,12 +155,13 @@
 
 /* Settings Popup */
 .setting-popup-container {
-    z-index: 2000 !important;
+    margin: auto !important; 
     border: none;
     overflow: visible !important;
     padding: 0;
     border-radius: 10px;
     overflow: hidden;
+
 }
 
 .setting-popup {
