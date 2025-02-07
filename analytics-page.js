@@ -316,5 +316,16 @@ document.addEventListener('visibilitychange', function() {
 //     console.log("Specific data ('day') has been cleared.");
 // });
 
+
+    chrome.storage.sync.get("preferences", (data) => {
+        let preferences = data.preferences || {
+            profile: 'user123',
+            sound: 1,
+            sensitivity: 0.8
+        };
+
+        const username = document.getElementById('username');
+        username.innerHTML = preferences.profile;
+    });
     
 });

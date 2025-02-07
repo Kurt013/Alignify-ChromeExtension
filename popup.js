@@ -55,6 +55,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // Call updateProgress initially and update every second
     updateProgress();
     setInterval(updateProgress, 1000);
+
+
+
+    function updateAchievements() {
+        chrome.storage.sync.get(["progress"], (data) => {
+            let progress = data.progress || {
+                highest_record: 0,
+                highest_streak: 0,
+                current_streak: 0,
+                current_record: 0,
+                lastDate: null
+            };
+
+            const streak = document.getElementById("streak");
+            streak.innerHTML = progress.current_streak;
+        });
+    }
+
+    updateAchievements();
     
 });
 

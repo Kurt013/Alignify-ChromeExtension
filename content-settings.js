@@ -94,25 +94,97 @@ document.head.appendChild(styleElement);
         }
     });
 
-    // Get the exit button
+
+// Load settings from chrome.storage
+chrome.storage.sync.get(['preferences'], (result) => {
+    let preferences = result.preferences || {
+        profile: 'user123',
+        sound: 1,
+        sensitivity: 0.8
+    };
+
+    // Get DOM elements
+    const usernameField = document.getElementById('username');
+    const editButton = document.getElementById('edit'); // Edit button
+    const volumeSlider = document.getElementById('volumeSlider');
+    const sensitivitySlider = document.getElementById('sensitivity');
+    const backButton = document.getElementById("back");
     const exitButton = document.getElementById("exit");
+    const saveButton = document.getElementById("save");
+
+
+    // Set initial values
+    usernameField.innerText = preferences.profile;
+    volumeSlider.value = preferences.sound;
+    sensitivitySlider.value = preferences.sensitivity;
+
+    // Function to update save button state
+    function updateSaveButtonState() {
+        if (volumeSlider.value != preferences.sound || 
+            sensitivitySlider.value != preferences.sensitivity || 
+            usernameField.innerText.trim() !== preferences.profile) {
+            saveButton.classList.add('save-active');
+        } else {
+            saveButton.classList.remove('save-active');
+        }
+    }
+
+    // Enable editing when the edit button is clicked
+    editButton.addEventListener("click", () => {
+        usernameField.contentEditable = "true";
+        usernameField.focus();
+        usernameField.classList.add("editable"); // Optional styling
+    });
+
+    // Disable editing on blur (when clicking outside)
+    usernameField.addEventListener("blur", () => {
+        usernameField.contentEditable = "false";
+        usernameField.classList.remove("editable");
+        updateSaveButtonState();
+    });
+
+    // Allow pressing Enter to save and exit edit mode
+    usernameField.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevents a new line from being added
+            usernameField.blur();
+        }
+    });
+
+    // Add event listeners for save button state update
+    volumeSlider.addEventListener('input', updateSaveButtonState);
+    sensitivitySlider.addEventListener('input', updateSaveButtonState);
+    usernameField.addEventListener('input', updateSaveButtonState);
+
+
+    // Get the exit button
     exitButton.addEventListener("click", () => {
         settingsDialog.close();
     });
 
-    // Get the save button
-    const saveButton = document.getElementById("save");
-    saveButton.addEventListener("click", () => {
-        settingsDialog.close();
+
+    // Save button click event
+    saveButton.addEventListener("click", (e) => {
+        if (!saveButton.classList.contains("save-active")) {
+            e.preventDefault();
+        } else {
+            chrome.storage.sync.set({ preferences }, () => {
+                saveButton.classList.remove("save-active");
+                settingsDialog.close();
+            });
+        }
     });
 
+
     // Get the back button
-    const backButton = document.getElementById("back");
     backButton.addEventListener("click", () => {
         settingsDialog.close();
     });
 
-
    
+});
+
+
+  
 
     

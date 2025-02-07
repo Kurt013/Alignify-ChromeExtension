@@ -2,27 +2,6 @@ let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; //
 let correctPostureDuration = 0; // Tracks the current record for the day
 const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
 
-
-// // Clear the data for today
-// chrome.storage.sync.remove('day', () => {
-//     console.log("Specific data ('day') has been cleared.");
-// });
-
-
-// setInterval(() => {
-//         chrome.storage.sync.get("progress", (data) => {
-//             let progress = data.progress || {
-//                 highest_record: 0,
-//                 highest_streak: 0,
-//                 current_streak: 0,
-//                 current_record: 0
-//             };
-
-//         });
-// }, 1000); // Runs every 1 second
-
-
-
 console.log("Initializing the model...");
 
 async function init() {
