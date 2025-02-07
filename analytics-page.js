@@ -175,7 +175,15 @@ function updateChart() {
     });
 }
 
-updateChart();
+
+if (document.hidden === false) {
+    updateChart();
+}
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden === false) {
+        updateChart();
+    }
+});
 
     ctx.addEventListener('mousedown', function(e) {
         let startX = e.pageX;
