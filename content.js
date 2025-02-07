@@ -1,19 +1,17 @@
 let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; // postureState to track if posture is incorrect
-
 console.log("Initializing the model...");
 
 async function init() {
     const modelURL = chrome.runtime.getURL('my_model/model.json');
     const metadataURL = chrome.runtime.getURL('my_model/metadata.json');
 
+    // Create the audio element
     const audioElement = document.createElement('audio');
     audioElement.src = chrome.runtime.getURL('./assets/notif_sound.mp3');
     audioElement.id = 'alertSound';
     document.body.appendChild(audioElement);
-
-
-
-
+    
+    // Create the dialog element for the settings
     const canvasWrapper = document.createElement('dialog');
     canvasWrapper.id = 'setting-popup';
     canvasWrapper.classList.add('setting-popup-container');
@@ -159,7 +157,7 @@ async function loop(timestamp) {
     webcam.update(); // update the webcam frame
     await predict();
     window.requestAnimationFrame(loop);
-}
+}   
 
 async function predict() {
     // Prediction #1: run input through posenet
@@ -227,17 +225,15 @@ async function predict() {
 
     // Show or hide the dialog based on incorrect posture detection
     if (incorrectPostureDetected && !postureState) {
-        postureState = true; // Set posture state to incorrect
-        showDialog(); // Show dialog
+        postureState = true; 
+        showDialog(); 
     } else if (!incorrectPostureDetected && postureState) {
-        postureState = false; // Set posture state to correct
-        hideDialog(); // Hide dialog
+        postureState = false; 
+        hideDialog(); 
     }
 
     // document.getElementById('setting-popup').showModal();
 
-
-    // finally draw the poses
     drawPose(pose);
 }
 
@@ -273,6 +269,4 @@ function playSound() {
 
 // Call the initialize function to load the model and setup everything
 init();
-
-
 

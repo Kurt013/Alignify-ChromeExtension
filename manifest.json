@@ -32,10 +32,6 @@
       {
         "matches": ["<all_urls>"],   
         "css": ["./notif-message.css"]        
-      },
-      {
-        "matches": ["<all_urls>"],   
-        "js": ["./content.js"]        
       }
     ],
     "host_permissions": [
