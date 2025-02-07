@@ -298,7 +298,7 @@
 }
 
 .sound p, .sensitivity p {
-    flex-basis: 80px;
+    flex-basis: 120px;
     text-align: end;
     padding-right: 30px;
 }

@@ -38,7 +38,7 @@
       {
         "resources": [
           "my_model/*",
-          "assets/notif_sound.mp3",
+          "assets/*",
           "icons/*",
           "fonts/*"
         ],

@@ -1,5 +1,39 @@
 let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; // postureState to track if posture is incorrect
 let correctPostureDuration = 0; // Tracks the current record for the day
+let sensitivity; // Default sensitivity
+let volume; // Default volume
+let audioPath;
+const checkStatus = document.getElementById("check-icon");
+// const checkPopup = document.getElementById("setting-popup");
+
+chrome.storage.sync.get(["preferences"], (result) => {
+
+    let preferences = result.preferences || {
+        profile: 'user123',
+        sound: 1,
+        sensitivity: 0.8
+    };
+
+    sensitivity = preferences.sensitivity;
+    volume = parseFloat(preferences.sound);
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (changes.preferences) {
+        let newPreferences = changes.preferences.newValue;
+
+        if (newPreferences.sensitivity !== undefined) {
+            sensitivity = newPreferences.sensitivity;
+            console.log("Updated Sensitivity:", sensitivity);
+        }
+
+        if (newPreferences.sound !== undefined) {  // Correct the key from "volume" to "sound"
+            volume = parseFloat(newPreferences.sound) || 1.0; // Ensure valid volume
+            console.log("Updated Volume:", volume);
+        }
+    }
+});
+
 const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
 
 console.log("Initializing the model...");
@@ -10,10 +44,10 @@ async function init() {
 
     // Create the audio element
     const audioElement = document.createElement('audio');
-    audioElement.src = chrome.runtime.getURL('./assets/notif_sound.mp3');
     audioElement.id = 'alertSound';
     document.body.appendChild(audioElement);
-    
+
+
     const popupElement = document.createElement('dialog');
     const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
 
@@ -112,24 +146,31 @@ async function predict() {
 
         labelContainer.children[i].innerHTML = classPrediction;
 
-        if (prediction[i].className === "Slouching_Forward" && prediction[i].probability > 0.8) {
+        if (prediction[i].className === "Correct_Posture" && prediction[i].probability > sensitivity) {
+            incorrectPostureDetected = false;
+        } else if (prediction[i].className === "Slouching_Forward" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
+            audioPath = chrome.runtime.getURL('assets/slouching_forward.mp3');
             document.getElementById("header-warning").innerText = "Slouching Forward";
             document.getElementById("content-warning").innerText = "Leaning in too much? Adjust your posture to stay comfortable during long calls.";
-        } else if (prediction[i].className === "Leaning_Back" && prediction[i].probability > 0.8) {
+        } else if (prediction[i].className === "Leaning_Back" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
+            audioPath = chrome.runtime.getURL('assets/leaning_back.mp3');
             document.getElementById("header-warning").innerText = "Leaning Back";
             document.getElementById("content-warning").innerText = "You're leaning too far back—sit upright for a more engaging call presence!";
-        } else if (prediction[i].className === "Leaning_Sideways" && prediction[i].probability > 0.8) {
+        } else if (prediction[i].className === "Leaning_Sideways" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
+            audioPath = chrome.runtime.getURL('assets/leaning_sideways.mp3');
             document.getElementById("header-warning").innerText = "Leaning Sideway";
             document.getElementById("content-warning").innerText = "Shift your weight back to the center—long shifts feel better with even posture!";
-        } else if (prediction[i].className === "No_Person" && prediction[i].probability > 0.8) {
+        } else if (prediction[i].className === "No_Person" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
+            audioPath = chrome.runtime.getURL('assets/no_person.mp3');
             document.getElementById("header-warning").innerText = "No person";
             document.getElementById("content-warning").innerText = "Tracking paused—resume when you're back at your station.";
-        } else if (prediction[i].className === "Head_Drooping" && prediction[i].probability > 0.8) {
+        } else if (prediction[i].className === "Head_Drooping" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
+            audioPath = chrome.runtime.getURL('assets/head_drooping.mp3');
             document.getElementById("header-warning").innerText = "Head Drooping (Drowsy)";
             document.getElementById("content-warning").innerText = "Fatigue setting in? A quick stretch or water break can help you refresh!";
         }
@@ -161,6 +202,13 @@ async function predict() {
     });
 
 
+    if (!incorrectPostureDetected) {
+        checkStatus.classList.remove('hide-check');
+    }
+    else {
+        checkStatus.classList.add('hide-check');
+    }
+
     // Show or hide the dialog based on incorrect posture detection
     if (incorrectPostureDetected && !postureState) {
         postureState = true; 
@@ -170,7 +218,7 @@ async function predict() {
         hideDialog(); 
     }
 
-    if (!incorrectPostureDetected) {
+    if (!incorrectPostureDetected && !settingsDialog.open) {
         if (correctPostureDuration === 60) {
             chrome.storage.sync.get(["day", "progress"], (data) => {
                 let day = data.day || {}; 
@@ -214,10 +262,7 @@ async function predict() {
                 progress.lastDate = today;
     
                 // Save updated values
-                chrome.storage.sync.set({ day, progress }, () => {
-                    console.log("Updated day:", day);
-                    console.log("Updated progress:", progress);
-                });
+                chrome.storage.sync.set({ day, progress });
             });
     
             correctPostureDuration = 0; // Reset duration counter
@@ -244,8 +289,8 @@ function drawPose(pose) {
 
 function showDialog() {
     const popup = document.getElementById('notif-popup');
-    popup.showModal(); // Show the dialog box
     playSound(); // Play the alert sound
+    popup.showModal(); // Show the dialog box
 }
 
 function hideDialog() {
@@ -256,13 +301,22 @@ function hideDialog() {
 
 function playSound() {
     const sound = document.getElementById("alertSound");
-    sound.play();
+    if (sound) {
+        // Pause the current audio if it's playing
+        sound.pause();
+        sound.currentTime = 0; // Reset audio to start
+
+        // Set the new audio source and play it
+        sound.src = audioPath;
+        sound.volume = volume;
+        sound.play();
+    }
 }
 
 function pauseSound() {
     const sound = document.getElementById("alertSound");
     sound.pause();
-    alertSound.currentTime = 0;
+    sound.currentTime = 0;
 }
 
 

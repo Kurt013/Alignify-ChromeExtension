@@ -249,6 +249,28 @@ document.addEventListener('visibilitychange', function() {
     function getRandomMessage() {
         return messages[Math.floor(Math.random() * messages.length)];
     }
+
+
+
+
+
+    const postureTips = [
+        "Reminder: Sit back, relax, but don't slouch - your spine will thank you!",
+        "Reminder: Stretch it out every hour - your body will love the break!",
+        "Reminder: Eye level with your screen, not the desk! Keep that neck happy.",
+        "Reminder: Engage your core - not just for fitness, but for good posture too!",
+        "Reminder: Grab some water - it's a great excuse to stand up and stretch!"
+    ];
+
+
+    const tips = document.getElementById('tip-reminder');
+
+    tips.innerHTML = getRandomTip();
+
+    function getRandomTip() {
+        return postureTips[Math.floor(Math.random() * postureTips.length)];
+    }
+
     
 
     function updateProgress() {
@@ -327,5 +349,8 @@ document.addEventListener('visibilitychange', function() {
         const username = document.getElementById('username');
         username.innerHTML = preferences.profile;
     });
+
+
+    
     
 });

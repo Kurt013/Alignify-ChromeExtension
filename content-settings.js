@@ -37,7 +37,7 @@ document.head.appendChild(styleElement);
              <h1>Settings</h1>
          </div>
          <div id="camera-container" class="camera-container">
-             <div class="check-icon">
+             <div id="check-icon" class="check-icon hide-check">
                  <img src="${chrome.runtime.getURL('icons/check.svg')}">
              </div>
              <canvas id="canvas" class="camera" width="260" height="260"></canvas>
@@ -51,15 +51,15 @@ document.head.appendChild(styleElement);
          </div>
          <div class="settings">
              <div class="sound">
-                 <p>Sound</p>
+                 <p>Sound (<span id="sound_perc"></span>)</p>
                  <label class="soundL">
-                     <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                     <input type="range" id="volumeSlider" min="0" max="1" step="0.1">
                  </label>
              </div>
              <div class="sensitivity">
-                 <p>Sensitivity</p>
+                 <p>Sensitivity (<span id="sensitivity_perc"></span>)</p>
                  <label class="sensitivityL">
-                     <input type="range" id="sensitivity" min="0.5" max="1" step="0.01" value="0.8">
+                     <input type="range" id="sensitivity" min="0.5" max="0.95" step="0.01">
                  </label>
              </div>
          </div>
@@ -112,11 +112,30 @@ chrome.storage.sync.get(['preferences'], (result) => {
     const exitButton = document.getElementById("exit");
     const saveButton = document.getElementById("save");
 
+    const soundPercent = document.getElementById('sound_perc');
+    const sensitivityPercent = document.getElementById('sensitivity_perc');
 
     // Set initial values
     usernameField.innerText = preferences.profile;
     volumeSlider.value = preferences.sound;
     sensitivitySlider.value = preferences.sensitivity;
+
+
+    // Update the displayed percentage for sound and sensitivity
+    function updateDisplayedPercentages() {
+        soundPercent.innerText = `${Math.round(volumeSlider.value * 100)}%`;
+        sensitivityPercent.innerText = `${Math.round(sensitivitySlider.value * 100)}%`;
+    }
+
+    // Initial update of displayed percentages
+    updateDisplayedPercentages();
+
+    // Add event listeners to update percentages dynamically
+    volumeSlider.addEventListener('input', updateDisplayedPercentages);
+    sensitivitySlider.addEventListener('input', updateDisplayedPercentages);
+
+
+
 
     // Function to update save button state
     function updateSaveButtonState() {
@@ -168,9 +187,14 @@ chrome.storage.sync.get(['preferences'], (result) => {
         if (!saveButton.classList.contains("save-active")) {
             e.preventDefault();
         } else {
+            preferences.profile = usernameField.innerText.trim();
+            preferences.sound = parseFloat(volumeSlider.value);
+            preferences.sensitivity = parseFloat(sensitivitySlider.value);
+
             chrome.storage.sync.set({ preferences }, () => {
                 saveButton.classList.remove("save-active");
                 settingsDialog.close();
+                console.log(preferences);
             });
         }
     });
