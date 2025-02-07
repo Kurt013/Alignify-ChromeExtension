@@ -3,6 +3,7 @@ let correctPostureDuration = 0; // Tracks the current record for the day
 let sensitivity; // Default sensitivity
 let volume; // Default volume
 let audioPath;
+let previousAudioPath = "";
 const checkStatus = document.getElementById("check-icon");
 // const checkPopup = document.getElementById("setting-popup");
 
@@ -150,29 +151,19 @@ async function predict() {
             incorrectPostureDetected = false;
         } else if (prediction[i].className === "Slouching_Forward" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
-            audioPath = chrome.runtime.getURL('assets/slouching_forward.mp3');
-            document.getElementById("header-warning").innerText = "Slouching Forward";
-            document.getElementById("content-warning").innerText = "Leaning in too much? Adjust your posture to stay comfortable during long calls.";
+            setAudioAndPopup('slouching_forward.mp3', "Slouching Forward", "Leaning in too much? Adjust your posture to stay comfortable during long calls.");
         } else if (prediction[i].className === "Leaning_Back" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
-            audioPath = chrome.runtime.getURL('assets/leaning_back.mp3');
-            document.getElementById("header-warning").innerText = "Leaning Back";
-            document.getElementById("content-warning").innerText = "You're leaning too far back—sit upright for a more engaging call presence!";
+            setAudioAndPopup('leaning_back.mp3', "Leaning Back", "You're leaning too far back—sit upright for a more engaging call presence!");
         } else if (prediction[i].className === "Leaning_Sideways" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
-            audioPath = chrome.runtime.getURL('assets/leaning_sideways.mp3');
-            document.getElementById("header-warning").innerText = "Leaning Sideway";
-            document.getElementById("content-warning").innerText = "Shift your weight back to the center—long shifts feel better with even posture!";
+            setAudioAndPopup('leaning_sideways.mp3', "Leaning Sideways", "Shift your weight back to the center—long shifts feel better with even posture!");
         } else if (prediction[i].className === "No_Person" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
-            audioPath = chrome.runtime.getURL('assets/no_person.mp3');
-            document.getElementById("header-warning").innerText = "No person";
-            document.getElementById("content-warning").innerText = "Tracking paused—resume when you're back at your station.";
+            setAudioAndPopup('no_person.mp3', "No person", "Tracking paused—resume when you're back at your station.");
         } else if (prediction[i].className === "Head_Drooping" && prediction[i].probability > sensitivity) {
             incorrectPostureDetected = true;
-            audioPath = chrome.runtime.getURL('assets/head_drooping.mp3');
-            document.getElementById("header-warning").innerText = "Head Drooping (Drowsy)";
-            document.getElementById("content-warning").innerText = "Fatigue setting in? A quick stretch or water break can help you refresh!";
+            setAudioAndPopup('head_drooping.mp3', "Head Drooping (Drowsy)", "Fatigue setting in? A quick stretch or water break can help you refresh!");
         }
     
     }
@@ -299,17 +290,33 @@ function hideDialog() {
 }
 
 
+// New function to handle audio playback and popup update
+function setAudioAndPopup(audioFile, headerText, contentText) {
+    const newAudioPath = chrome.runtime.getURL(`assets/${audioFile}`);
+    
+    if (previousAudioPath !== newAudioPath) {
+        previousAudioPath = newAudioPath; // Update the previous audio path
+        
+        audioPath = newAudioPath; // Set the new audio path
+        document.getElementById("header-warning").innerText = headerText;
+        document.getElementById("content-warning").innerText = contentText;
+        
+        playSound(); // Play the audio when the path changes
+    }
+}
+
+// Function to play the alert sound
 function playSound() {
     const sound = document.getElementById("alertSound");
     if (sound) {
-        // Pause the current audio if it's playing
+        // Pause and reset the current audio if it's playing
         sound.pause();
         sound.currentTime = 0; // Reset audio to start
 
         // Set the new audio source and play it
         sound.src = audioPath;
-        sound.volume = volume;
-        sound.play();
+        sound.volume = volume; // Use the saved volume setting
+        sound.play(); // Play the audio
     }
 }
 
