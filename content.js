@@ -2,10 +2,29 @@ let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; //
 let correctPostureDuration = 0; // Tracks the current record for the day
 const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
 
-// Clear the data for today
-// chrome.storage.sync.remove('day', () => {
-//     console.log("Specific data ('day') has been cleared.");
+// // Add dummy data for testing
+// chrome.storage.sync.get("day", (data) => {
+//     let day = data.day || {};
+
+//     // Add previous dates with corresponding data
+//     const previousDates = {
+//         "02/04/2024": 60,
+//         "02/06/2024": 120,
+//         "02/07/2024": 30
+//     };
+
+//     // Loop through the object and add the data to the `day` object
+//     for (let date in previousDates) {
+//         day[date] = previousDates[date];
+//     }
+
+//     // Save the updated `day` object in chrome storage
+//     chrome.storage.sync.set({ day }, () => {
+//         console.log("Previous dates with corresponding data have been added:", day);
+//     });
 // });
+
+
 
 
 
@@ -15,6 +34,47 @@ const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
 //     chrome.storage.sync.set({ day });
 //     console.log("Day data set to 2 hours in seconds:", day);
 // });
+
+// chrome.storage.sync.get("day", (data) => {
+//     let day = data.day || {};
+//     let previousDate = Object.keys(day).pop(); // Get the last date recorded
+
+//     if (previousDate) {
+//         let prevDate = new Date(previousDate).toLocaleDateString("en-US"); // Format previous date to MM/DD/YYYY
+
+//         // Check if the previous date is exactly one day before today
+//         let previousDay = new Date(today);
+//         previousDay.setDate(previousDay.getDate() - 1); // Subtract one day
+
+//         if (prevDate === previousDay.toLocaleDateString("en-US")) {
+//             progress.current_streak++;
+//         } else if (today !== prevDate) {
+//             progress.current_streak = 0; // Reset streak if it's a new day and not consecutive
+//         }
+//     } else {
+//         progress.current_streak = 0; // Initialize streak if no previous date exists
+//     }
+
+//     // Save the updated streak back to storage
+//     chrome.storage.sync.set({ "day": day }, () => {
+//         console.log("Streak updated!");
+//     });
+// });
+
+// setInterval(() => {
+//         chrome.storage.sync.get("progress", (data) => {
+//             let progress = data.progress || {
+//                 highest_record: 0,
+//                 highest_streak: 0,
+//                 current_streak: 0,
+//                 current_record: 0
+//             };
+
+//         });
+// }, 1000); // Runs every 1 second
+
+
+
 console.log("Initializing the model...");
 
 async function init() {
@@ -185,12 +245,23 @@ async function predict() {
 
     if (!incorrectPostureDetected) {
         if (correctPostureDuration === 60) {
-            chrome.storage.sync.get("day", (data) => {
-                let day = data.day || {};
-                day[today] = day[today] ? day[today] + 1 : 1; // Increment the count for today
-                chrome.storage.sync.set({ day });
-                console.log(day);
+            chrome.storage.sync.get(["day", "progress"], (data) => {
+                let day = data.day || {}; 
+                let progress = data.progress || {}; 
+            
+                // Update the day count
+                day[today] = day[today] ? day[today] + 1 : 1; 
+            
+                // Update progress (Example: increase current_record)
+                progress.current_record = (progress.current_record || 0) + 1; 
+            
+                // Save both updated day and progress
+                chrome.storage.sync.set({ day, progress }, () => {
+                    console.log("Updated day:", day);
+                    console.log("Updated progress:", progress);
+                });
             });
+            
 
             correctPostureDuration = 0; // Reset the frame count
         }

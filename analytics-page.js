@@ -1,66 +1,181 @@
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('myChart');
-    const dataValues = [2, 7.2, 7.1, 6.3, 6, 7, 3, 6.3, 4, 1, 0.5, 0.4, 0.3, 0.1]; 
-    const offset = 0; 
-    let offsetData; 
-    offsetData = dataValues.map(value => value + offset); 
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['2023-09-25', '2023-09-26', '2023-09-27', '2023-09-28', '2023-09-29', '2023-09-30', '2023-10-01', '2023-10-02', '2023-10-03', '2023-10-04', '2023-10-05', '2023-10-06', '2023-10-07', '2023-10-08'],
-            datasets: [{
-                data: offsetData,
-                borderRadius: Number.MAX_VALUE, 
-                backgroundColor: '#BAD8B6', 
-                borderColor: 'transparent', 
-                hoverBackgroundColor: '#E1EACD', 
-            }]
-        },
-        options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    display: true,
-                    ticks: {
-                        maxRotation: 0,
-                        minRotation: 0
-                    },
-                },
-                y: {
-                    display: false
-                }
+// // Clear the data for today
+// chrome.storage.sync.remove('day', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
+
+// // Clear the data for today
+// chrome.storage.sync.remove('week', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
+
+// // Clear the data for today
+// chrome.storage.sync.remove('month', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
+
+
+
+// // Add dummy data for testing
+// chrome.storage.sync.get("day", (data) => {
+//     let day = data.day || {};
+
+//     // Add previous dates with corresponding data
+//     const previousDates = {
+//         "01/31/2025": 100,
+//         "02/01/2025": 60,
+//         "02/02/2025": 120,
+//         "02/03/2025": 30,
+//         "02/04/2025": 45,
+//         "02/05/2025": 90,
+//         "02/06/2025": 75,
+//         "02/07/2025": 60
+//     };
+
+//     // Loop through the object and add the data to the `day` object
+//     for (let date in previousDates) {
+//         day[date] = previousDates[date];
+//     }
+
+//     // Save the updated `day` object in chrome storage
+//     chrome.storage.sync.set({ day }, () => {
+//         console.log("Previous dates with corresponding data have been added:", day);
+//     });
+// });
+
+chrome.storage.sync.get("day", (data) => {
+    let day = data.day || {}; // Get stored daily data
+
+    function getStartAndEndOfWeek(date) {
+        let d = new Date(date);
+        let dayOfWeek = d.getDay(); // Get the day of the week (0 = Sunday, 6 = Saturday)
+        let startDate = new Date(d);
+        startDate.setDate(d.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Adjust to Monday
+        startDate.setHours(0, 0, 0, 0);
+
+        let endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6); // End of the week (Sunday)
+
+        let startLabel = startDate.toLocaleDateString("en-US"); // Format as MM/DD/YYYY
+        let endLabel = endDate.toLocaleDateString("en-US"); // Format as MM/DD/YYYY
+        return `From: ${startLabel} To: ${endLabel}`; // Format as "MM/DD/YYYY to MM/DD/YYYY"
+    }
+
+    function aggregateWeeklyData(dailyData) {
+        let weeklyData = {};
+
+        for (let date in dailyData) {
+            let weekLabel = getStartAndEndOfWeek(date); // Get week range as label
+            weeklyData[weekLabel] = (weeklyData[weekLabel] || 0) + dailyData[date];
+        }
+
+
+        return weeklyData;
+    }
+
+    function aggregateMonthlyData(dailyData) {
+        let monthlyData = {};
+
+        for (let date in dailyData) {
+            let month = new Date(date).toLocaleString('default', { month: 'short', year: 'numeric' });
+            monthlyData[month] = (monthlyData[month] || 0) + dailyData[date];
+        }
+
+        return monthlyData;
+    }
+
+    let weeklyData = aggregateWeeklyData(day);
+    let monthlyData = aggregateMonthlyData(day);
+
+    // Store the aggregated weekly and monthly data
+    chrome.storage.sync.set({ week: weeklyData, month: monthlyData }, () => {
+        console.log("Aggregated weekly and monthly data saved:", { week: weeklyData, month: monthlyData });
+    });
+});
+
+let chart;
+let viewMode = "day"; // Change to "day" / "week" / "month" based on user selection
+
+function updateChart() {
+    chrome.storage.sync.get(["day", "week", "month"], (data) => {
+
+
+        let dataset = data[viewMode] || {}; // Fetch the relevant dataset
+
+        let labelData = [];  // Labels (dates/weeks/months)
+        let dataValues = []; // Corresponding values (hours)
+
+        for (let label in dataset) {
+            console.log(`Processing label: ${label}, Value: ${dataset[label]}`);
+            labelData.push(label);
+            dataValues.push(dataset[label]);
+        }
+
+        console.log("Label Data (Dates):", labelData);
+        console.log("Data Values:", dataValues);
+
+        if (chart) {
+            chart.destroy(); // Destroy the existing chart before creating a new one
+        }
+
+        let dataCount = dataValues.length;
+        let chartWidth = dataCount * 100;
+        ctx.width = chartWidth;
+
+        console.log("Label Data (Dates):", labelData);
+
+
+        // Initialize Chart
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labelData,
+                datasets: [{
+                    data: dataValues,
+                    borderRadius: Number.MAX_VALUE,
+                    backgroundColor: '#BAD8B6',
+                    borderColor: 'transparent',
+                    hoverBackgroundColor: '#E1EACD',
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        display: true,
+                        ticks: { maxRotation: 0, minRotation: 0 },
+                    },
+                    y: { display: false }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return `No. of Hrs: ${dataValues[context.dataIndex]}`; // Show the actual value from dataValues
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let totalSeconds = dataValues[context.dataIndex];
+                                let hours = Math.floor(totalSeconds / 3600);
+                                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                                let seconds = totalSeconds % 60;
+                                return `Time: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                            }
                         }
                     }
-                }
-            },
-            animation: {
-                duration: 0
-            },
-            responsiveAnimationDuration: 0,
-            hover: {
-                animationDuration: 0,
-            },
-            layout: {
-                padding: {
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0
-                }
+                },
+                animation: { duration: 0 },
+                responsiveAnimationDuration: 0,
+                hover: { animationDuration: 0 },
+                layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } }
             }
-        }
+        });
+    console.log("Chart updated for view mode:", labelData);
+
     });
+}
+
+updateChart();
 
     ctx.addEventListener('mousedown', function(e) {
         let startX = e.pageX;
@@ -90,19 +205,28 @@ document.addEventListener('DOMContentLoaded', function() {
     dayBtn.addEventListener('click', function() {
         dayBtn.classList.add('current-tab');
         weekBtn.classList.remove('current-tab');
-        monthBtn.classList.remove('current-tab');        
+        monthBtn.classList.remove('current-tab');
+        
+        viewMode = "day";
+        updateChart();
     });
 
     weekBtn.addEventListener('click', function() {
         dayBtn.classList.remove('current-tab');
         weekBtn.classList.add('current-tab');
-        monthBtn.classList.remove('current-tab');        
+        monthBtn.classList.remove('current-tab');   
+        
+        viewMode = "week";
+        updateChart();
     });
 
     monthBtn.addEventListener('click', function() {
         dayBtn.classList.remove('current-tab');
         weekBtn.classList.remove('current-tab');
-        monthBtn.classList.add('current-tab');        
+        monthBtn.classList.add('current-tab');     
+        
+        viewMode = "month";
+        updateChart();
     });
 
 
@@ -144,4 +268,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Call updateProgress initially and update every second
     updateProgress();
     setInterval(updateProgress, 1000);
+
+
+
+
+
+
+
+
+
+
+
+    
 });
