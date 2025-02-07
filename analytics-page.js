@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // chrome.storage.sync.remove('month', () => {
 //     console.log("Specific data ('day') has been cleared.");
 // });
-
+    const currentDate = new Date().toISOString();
+    console.log("Current Date:", currentDate);
 
 
     // // Add dummy data for testing
@@ -59,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //         "2025-03-04": 80,
     //         "2025-03-05": 75,
     //         "2025-03-06": 130,
-    //         "2025-03-07": 50
     //     };
 
     //     // Loop through the object and add the data to the `day` object
@@ -73,32 +73,32 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
     // });
 
-    chrome.storage.sync.get("progress", (data) => {
+    // chrome.storage.sync.get("progress", (data) => {
 
-        let progress = data.progress || {
-            highest_record: 0,
-            highest_streak: 0,
-            current_streak: 0,
-            current_record: 0,
-            lastDate: null
-        };
+    //     let progress = data.progress || {
+    //         highest_record: 0,
+    //         highest_streak: 0,
+    //         current_streak: 0,
+    //         current_record: 0,
+    //         lastDate: null
+    //     };
 
-        // Update the progress object with the new data
-        progress.highest_record = 120;
-        progress.highest_streak = 3;
-        progress.current_streak = 1;
-        progress.current_record = 10;
-        let yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        progress.lastDate = yesterday.toISOString().split('T')[0]
+    //     // Update the progress object with the new data
+    //     progress.highest_record = 120;
+    //     progress.highest_streak = 3;
+    //     progress.current_streak = 1;
+    //     progress.current_record = 10;
+    //     let yesterday = new Date();
+    //     yesterday.setDate(yesterday.getDate() - 1);
+    //     progress.lastDate = yesterday.toISOString().split('T')[0]
 
 
 
-        // Save the updated progress object in chrome storage
-        chrome.storage.sync.set({ progress }, () => {
-            console.log("Progress object has been updated:", progress);
-        });
-    });
+    //     // Save the updated progress object in chrome storage
+    //     chrome.storage.sync.set({ progress }, () => {
+    //         console.log("Progress object has been updated:", progress);
+    //     });
+    // });
 
 
 
