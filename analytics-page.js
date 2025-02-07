@@ -90,9 +90,7 @@ chrome.storage.sync.get("day", (data) => {
     let monthlyData = aggregateMonthlyData(day);
 
     // Store the aggregated weekly and monthly data
-    chrome.storage.sync.set({ week: weeklyData, month: monthlyData }, () => {
-        console.log("Aggregated weekly and monthly data saved:", { week: weeklyData, month: monthlyData });
-    });
+    chrome.storage.sync.set({ week: weeklyData, month: monthlyData });
 });
 
 let chart;
@@ -108,13 +106,9 @@ function updateChart() {
         let dataValues = []; // Corresponding values (hours)
 
         for (let label in dataset) {
-            console.log(`Processing label: ${label}, Value: ${dataset[label]}`);
             labelData.push(label);
             dataValues.push(dataset[label]);
         }
-
-        console.log("Label Data (Dates):", labelData);
-        console.log("Data Values:", dataValues);
 
         if (chart) {
             chart.destroy(); // Destroy the existing chart before creating a new one
@@ -123,8 +117,6 @@ function updateChart() {
         let dataCount = dataValues.length;
         let chartWidth = dataCount * 100;
         ctx.width = chartWidth;
-
-        console.log("Label Data (Dates):", labelData);
 
 
         // Initialize Chart
@@ -170,17 +162,18 @@ function updateChart() {
                 layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } }
             }
         });
-    console.log("Chart updated for view mode:", labelData);
-
     });
 }
 
 
 if (document.hidden === false) {
+    updateAchievements();
     updateChart();
 }
+
 document.addEventListener('visibilitychange', function() {
     if (document.hidden === false) {
+        updateAchievements();
         updateChart();
     }
 });
@@ -278,14 +271,50 @@ document.addEventListener('visibilitychange', function() {
     setInterval(updateProgress, 1000);
 
 
+    //Get the progress (highest streak and record)
+    function updateAchievements() {
+        chrome.storage.sync.get(["progress"], (data) => {
+            let progress = data.progress || {
+                highest_record: 0,
+                highest_streak: 0,
+                current_streak: 0,
+                current_record: 0,
+                lastDate: null
+            };
+
+            console.log(progress);
+
+            const highestRecord = document.getElementById("highscore");
+            const unitRecord = document.getElementById("score-unit");
+
+            const highestStreak = document.getElementById("highstreak");
+            const streak = document.getElementById("streak");
 
 
+            if (progress.highest_record < 60) {
+                highestRecord.innerHTML = progress.highest_record;
+                unitRecord.innerHTML = "secs";
+            } else if (progress.highest_record < 3600) {
+                highestRecord.innerHTML = (progress.highest_record / 60).toFixed(1);
+                unitRecord.innerHTML = "mins";
+            } else {
+                highestRecord.innerHTML = (progress.highest_record / 3600).toFixed(1);
+                unitRecord.innerHTML = "hours";
+            }
+
+            highestStreak.innerHTML = progress.highest_streak;
+            streak.innerHTML = progress.current_streak;
+        });
+    }
 
 
+    updateAchievements();
 
-
-
-
+    
+// // Clear the data for today
+// chrome.storage.sync.remove('progress', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
 
     
 });

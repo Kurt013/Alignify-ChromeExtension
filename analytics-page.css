@@ -214,8 +214,8 @@ body {
     background-color: var(--light-green);
 }
 
-.highest-record .score span,
-.highest-streak .score span {
+.highest-record .score span:nth-child(2),
+.highest-streak .score span:nth-child(2) {
     font-size: 14px;
     font-family: 'Epilogue-ExtraLight';
     margin-top: -5px;
