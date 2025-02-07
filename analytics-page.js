@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('myChart');
 
-// // Clear the data for today
+//     // Clear the data for today
 // chrome.storage.sync.remove('day', () => {
 //     console.log("Specific data ('day') has been cleared.");
 // });
@@ -18,32 +18,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-// // Add dummy data for testing
-// chrome.storage.sync.get("day", (data) => {
-//     let day = data.day || {};
+    // // Add dummy data for testing
+    // chrome.storage.sync.get("day", (data) => {
+    //     let day = data.day || {};
 
-//     // Add previous dates with corresponding data
-//     const previousDates = {
-//         "01/31/2025": 100,
-//         "02/01/2025": 60,
-//         "02/02/2025": 120,
-//         "02/03/2025": 30,
-//         "02/04/2025": 45,
-//         "02/05/2025": 90,
-//         "02/06/2025": 75,
-//         "02/07/2025": 60
-//     };
+    //     // Add previous dates with corresponding data
+    //     const previousDates = {
+    //         "2024-01-31": 100,
+    //         "2024-02-01": 60,
+    //         "2024-02-02": 120,
+    //         "2024-02-03": 30,
+    //         "2024-02-04": 45,
+    //         "2025-02-05": 90,
+    //         "2025-02-06": 75,
+    //         "2025-02-07": 60,
+    //         "2025-02-08": 110,
+    //         "2025-02-09": 80,
+    //         "2025-02-10": 95,
+    //         "2025-02-11": 65,
+    //         "2025-02-12": 120,
+    //         "2025-02-13": 105,
+    //         "2025-02-14": 150,
+    //         "2025-02-15": 40,
+    //         "2025-02-16": 60,
+    //         "2025-02-17": 80,
+    //         "2025-02-18": 130,
+    //         "2025-02-19": 90,
+    //         "2025-02-20": 75,
+    //         "2025-02-21": 100,
+    //         "2025-02-22": 120,
+    //         "2025-02-23": 60,
+    //         "2025-02-24": 55,
+    //         "2025-02-25": 95,
+    //         "2025-02-26": 110,
+    //         "2025-02-27": 85,
+    //         "2025-02-28": 70,
+    //         "2025-03-01": 90,
+    //         "2025-03-02": 120,
+    //         "2025-03-03": 100,
+    //         "2025-03-04": 80,
+    //         "2025-03-05": 75,
+    //         "2025-03-06": 130,
+    //         "2025-03-07": 50
+    //     };
 
-//     // Loop through the object and add the data to the `day` object
-//     for (let date in previousDates) {
-//         day[date] = previousDates[date];
-//     }
+    //     // Loop through the object and add the data to the `day` object
+    //     for (let date in previousDates) {
+    //         day[date] = previousDates[date];
+    //     }
 
-//     // Save the updated `day` object in chrome storage
-//     chrome.storage.sync.set({ day }, () => {
-//         console.log("Previous dates with corresponding data have been added:", day);
-//     });
-// });
+    //     // Save the updated `day` object in chrome storage
+    //     chrome.storage.sync.set({ day }, () => {
+    //         console.log("Previous dates with corresponding data have been added:", day);
+    //     });
+    // });
+
+    chrome.storage.sync.get("progress", (data) => {
+
+        let progress = data.progress || {
+            highest_record: 0,
+            highest_streak: 0,
+            current_streak: 0,
+            current_record: 0,
+            lastDate: null
+        };
+
+        // Update the progress object with the new data
+        progress.highest_record = 120;
+        progress.highest_streak = 3;
+        progress.current_streak = 1;
+        progress.current_record = 10;
+        let yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        progress.lastDate = yesterday.toISOString().split('T')[0]
+
+
+
+        // Save the updated progress object in chrome storage
+        chrome.storage.sync.set({ progress }, () => {
+            console.log("Progress object has been updated:", progress);
+        });
+    });
+
+
+
 
 chrome.storage.sync.get("day", (data) => {
     let day = data.day || {}; // Get stored daily data
@@ -58,36 +116,69 @@ chrome.storage.sync.get("day", (data) => {
         let endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6); // End of the week (Sunday)
 
-        let startLabel = startDate.toLocaleDateString("en-US"); // Format as MM/DD/YYYY
-        let endLabel = endDate.toLocaleDateString("en-US"); // Format as MM/DD/YYYY
-        return `From: ${startLabel} To: ${endLabel}`; // Format as "MM/DD/YYYY to MM/DD/YYYY"
+        let startLabel = startDate.toISOString().split('T')[0]; // Format as MM/DD/YYYY
+        let endLabel = endDate.toISOString().split('T')[0]; // Format as MM/DD/YYYY
+        return `${endLabel} - ${startLabel}`; // Format as "MM/DD/YYYY to MM/DD/YYYY"
     }
 
-    function aggregateWeeklyData(dailyData) {
-        let weeklyData = {};
-
-        for (let date in dailyData) {
-            let weekLabel = getStartAndEndOfWeek(date); // Get week range as label
-            weeklyData[weekLabel] = (weeklyData[weekLabel] || 0) + dailyData[date];
+        function aggregateWeeklyData(dailyData) {
+            let weeklyData = {};
+        
+            for (let date in dailyData) {
+                let weekLabel = getStartAndEndOfWeek(date); // Get week range as label
+                weeklyData[weekLabel] = (weeklyData[weekLabel] || 0) + dailyData[date];
+            }
+        
+            return weeklyData;
+        }
+        
+        function aggregateMonthlyData(dailyData) {
+            let monthlyData = {};
+        
+            // Convert the dailyData into an array of objects with date and value
+            let dateList = Object.keys(dailyData).map(date => {
+                return {
+                    date: new Date(date),  // Convert date string to Date object
+                    value: dailyData[date]
+                };
+            });
+        
+            // Sort the list by year, then month, then day
+            dateList.sort((a, b) => a.date - b.date); // Sorting by Date object
+        
+            // Aggregate the data by month and year in "YYYY/MM" format
+            let sortedMonthlyData = {};
+            dateList.forEach(item => {
+                // Format month as YYYY/MM
+                let monthLabel = `${item.date.getFullYear()}/${item.date.getMonth() + 1}`;
+                sortedMonthlyData[monthLabel] = (sortedMonthlyData[monthLabel] || 0) + item.value;
+            });
+        
+            // Sort the months based on year and month (important to ensure chronological order)
+            let sortedMonthKeys = Object.keys(sortedMonthlyData).sort((a, b) => {
+                let [yearA, monthA] = a.split('/');
+                let [yearB, monthB] = b.split('/');
+                
+                return (parseInt(yearA) - parseInt(yearB)) || (parseInt(monthA) - parseInt(monthB));
+            });
+        
+            // Create a new object with sorted keys
+            let finalSortedMonthlyData = {};
+            sortedMonthKeys.forEach(key => {
+                finalSortedMonthlyData[key] = sortedMonthlyData[key];
+            });
+        
+            // Output the result (sorted data by month-year in chronological order)
+            // console.log("Sorted Monthly Data:", finalSortedMonthlyData);
+        
+            return finalSortedMonthlyData;
         }
 
-
-        return weeklyData;
-    }
-
-    function aggregateMonthlyData(dailyData) {
-        let monthlyData = {};
-
-        for (let date in dailyData) {
-            let month = new Date(date).toLocaleString('default', { month: 'short', year: 'numeric' });
-            monthlyData[month] = (monthlyData[month] || 0) + dailyData[date];
-        }
-
-        return monthlyData;
-    }
 
     let weeklyData = aggregateWeeklyData(day);
     let monthlyData = aggregateMonthlyData(day);
+
+    console.log("Aggregated Weekly Datasafs:", monthlyData);
 
     // Store the aggregated weekly and monthly data
     chrome.storage.sync.set({ week: weeklyData, month: monthlyData });
@@ -278,7 +369,7 @@ document.addEventListener('visibilitychange', function() {
             const currentProgress = document.getElementById("current-record");
     
             let day = data.day || {};
-            let today = new Date().toLocaleDateString("en-US"); // Get today's date in MM/DD/YYYY format
+            let today = new Date().toISOString().split('T')[0]; // Get today's date in MM/DD/YYYY format
             let seconds = day[today] || 0; // Ensure today's value starts at 0 seconds
     
             // Convert seconds to hours in decimal format
@@ -334,7 +425,7 @@ document.addEventListener('visibilitychange', function() {
 
     
 // // Clear the data for today
-// chrome.storage.sync.remove('progress', () => {
+// chrome.storage.sync.remove(['progress', 'day', 'preferences', 'week', 'month'], () => {
 //     console.log("Specific data ('day') has been cleared.");
 // });
 

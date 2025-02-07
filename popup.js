@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const currentProgress = document.getElementById("current-record");
     
             let day = data.day || {};
-            let today = new Date().toLocaleDateString("en-US"); // Get today's date in MM/DD/YYYY format
+            let today = new Date().toISOString().split('T')[0]; // Get today's date in MM/DD/YYYY format
             let seconds = day[today] || 0; // Ensure today's value starts at 0 seconds
     
             // Convert seconds to HH:MM:SS format

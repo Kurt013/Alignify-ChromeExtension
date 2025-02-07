@@ -35,7 +35,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
-const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
+const today = new Date().toISOString().split('T')[0]; // Format: MM/DD/YYYY
 
 console.log("Initializing the model...");
 
@@ -222,10 +222,9 @@ async function predict() {
                 };
     
     
-                // Get yesterday's date in MM/DD/YYYY format
                 let yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
-                let yesterdayStr = yesterday.toLocaleDateString("en-US");
+                let yesterdayStr = yesterday.toISOString().split('T')[0];
     
                 // Update the day record (in seconds)
                 day[today] = (day[today] || 0) + 1; 
