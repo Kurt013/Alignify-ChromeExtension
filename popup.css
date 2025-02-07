@@ -154,7 +154,7 @@ body {
 
 
 .record {
-    width: 275px;
+    width: 315px;
     background-color: var(--light-yellow);
     display: flex;
     justify-content: space-between;

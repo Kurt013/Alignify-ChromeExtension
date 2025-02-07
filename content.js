@@ -1,4 +1,20 @@
 let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; // postureState to track if posture is incorrect
+let correctPostureDuration = 0; // Tracks the current record for the day
+const today = new Date().toLocaleDateString("en-US"); // Format: MM/DD/YYYY
+
+// Clear the data for today
+// chrome.storage.sync.remove('day', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
+
+
+
+// chrome.storage.sync.get("day", (data) => {
+//     let day = data.day || {};
+//     day[today] = 2 * 60 * 60; // 2 hours in seconds
+//     chrome.storage.sync.set({ day });
+//     console.log("Day data set to 2 hours in seconds:", day);
+// });
 console.log("Initializing the model...");
 
 async function init() {
@@ -167,6 +183,20 @@ async function predict() {
         hideDialog(); 
     }
 
+    if (!incorrectPostureDetected) {
+        if (correctPostureDuration === 60) {
+            chrome.storage.sync.get("day", (data) => {
+                let day = data.day || {};
+                day[today] = day[today] ? day[today] + 1 : 1; // Increment the count for today
+                chrome.storage.sync.set({ day });
+                console.log(day);
+            });
+
+            correctPostureDuration = 0; // Reset the frame count
+        }
+
+        correctPostureDuration += 1; // Increment frame count
+    }
 
     drawPose(pose);
 }

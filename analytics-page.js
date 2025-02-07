@@ -125,4 +125,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return messages[Math.floor(Math.random() * messages.length)];
     }
     
+
+    function updateProgress() {
+        chrome.storage.sync.get("day", (data) => {
+            const currentProgress = document.getElementById("current-record");
+    
+            let day = data.day || {};
+            let today = new Date().toLocaleDateString("en-US"); // Get today's date in MM/DD/YYYY format
+            let seconds = day[today] || 0; // Ensure today's value starts at 0 seconds
+    
+            // Convert seconds to hours in decimal format
+            let hours = (seconds / 3600);
+            let formattedTime = hours % 1 === 0 ? hours.toFixed(0) : (hours % 1 >= 0.1 ? hours.toFixed(1) : hours.toFixed(0));
+            currentProgress.innerHTML = formattedTime;
+        });
+    }
+    
+    // Call updateProgress initially and update every second
+    updateProgress();
+    setInterval(updateProgress, 1000);
 });

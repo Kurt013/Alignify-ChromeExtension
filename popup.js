@@ -33,4 +33,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+
+    function updateProgress() {
+        chrome.storage.sync.get("day", (data) => {
+            const currentProgress = document.getElementById("current-record");
+    
+            let day = data.day || {};
+            let today = new Date().toLocaleDateString("en-US"); // Get today's date in MM/DD/YYYY format
+            let seconds = day[today] || 0; // Ensure today's value starts at 0 seconds
+    
+            // Convert seconds to HH:MM:SS format
+            let hrs = Math.floor(seconds / 3600);
+            let mins = Math.floor((seconds % 3600) / 60);
+            let secs = seconds % 60;
+            let formattedTime = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    
+            currentProgress.innerHTML = formattedTime;
+        });
+    }
+    
+    // Call updateProgress initially and update every second
+    updateProgress();
+    setInterval(updateProgress, 1000);
+    
 });
+
