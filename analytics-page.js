@@ -15,8 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // chrome.storage.sync.remove('month', () => {
 //     console.log("Specific data ('day') has been cleared.");
 // });
-    const currentDate = new Date().toISOString();
-    console.log("Current Date:", currentDate);
+
+// // Clear the data for today
+// chrome.storage.sync.remove('progress', () => {
+//     console.log("Specific data ('day') has been cleared.");
+// });
 
 
     // // Add dummy data for testing
@@ -25,41 +28,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //     // Add previous dates with corresponding data
     //     const previousDates = {
-    //         "2024-01-31": 100,
-    //         "2024-02-01": 60,
-    //         "2024-02-02": 120,
+    //         "2024-12-21": 12,
+    //         "2024-12-23": 30,
+    //         "2024-12-25": 20,
+    //         "2024-12-26": 300,
+    //         "2024-12-29": 221,
+    //         "2024-12-30": 321,
+    //         "2024-01-27": 333,
+    //         "2024-01-28": 294,
+    //         "2024-01-29": 218,
+    //         "2024-01-30": 294,
+    //         "2024-01-31": 239,
+    //         "2024-02-01": 210,
+    //         "2024-02-02": 21,
     //         "2024-02-03": 30,
     //         "2024-02-04": 45,
     //         "2025-02-05": 90,
     //         "2025-02-06": 75,
-    //         "2025-02-07": 60,
-    //         "2025-02-08": 110,
-    //         "2025-02-09": 80,
-    //         "2025-02-10": 95,
-    //         "2025-02-11": 65,
-    //         "2025-02-12": 120,
-    //         "2025-02-13": 105,
-    //         "2025-02-14": 150,
-    //         "2025-02-15": 40,
-    //         "2025-02-16": 60,
-    //         "2025-02-17": 80,
-    //         "2025-02-18": 130,
-    //         "2025-02-19": 90,
-    //         "2025-02-20": 75,
-    //         "2025-02-21": 100,
-    //         "2025-02-22": 120,
-    //         "2025-02-23": 60,
-    //         "2025-02-24": 55,
-    //         "2025-02-25": 95,
-    //         "2025-02-26": 110,
-    //         "2025-02-27": 85,
-    //         "2025-02-28": 70,
-    //         "2025-03-01": 90,
-    //         "2025-03-02": 120,
-    //         "2025-03-03": 100,
-    //         "2025-03-04": 80,
-    //         "2025-03-05": 75,
-    //         "2025-03-06": 130,
     //     };
 
     //     // Loop through the object and add the data to the `day` object
@@ -73,38 +58,19 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
     // });
 
-    // chrome.storage.sync.get("progress", (data) => {
-
-    //     let progress = data.progress || {
-    //         highest_record: 0,
-    //         highest_streak: 0,
-    //         current_streak: 0,
-    //         current_record: 0,
-    //         lastDate: null
-    //     };
-
-    //     // Update the progress object with the new data
-    //     progress.highest_record = 120;
-    //     progress.highest_streak = 3;
-    //     progress.current_streak = 1;
-    //     progress.current_record = 10;
-    //     let yesterday = new Date();
-    //     yesterday.setDate(yesterday.getDate() - 1);
-    //     progress.lastDate = yesterday.toISOString().split('T')[0]
+  
 
 
 
-    //     // Save the updated progress object in chrome storage
-    //     chrome.storage.sync.set({ progress }, () => {
-    //         console.log("Progress object has been updated:", progress);
-    //     });
-    // });
-
-
-
-
-chrome.storage.sync.get("day", (data) => {
+chrome.storage.sync.get(["day", "progress"], (data) => {
     let day = data.day || {}; // Get stored daily data
+    let progress = data.progress || {
+        highest_record: 0,
+        highest_streak: 0,
+        current_streak: 0,
+        current_record: 0,
+        lastDate: null
+    }
 
     function getStartAndEndOfWeek(date) {
         let d = new Date(date);
@@ -121,67 +87,76 @@ chrome.storage.sync.get("day", (data) => {
         return `${endLabel} - ${startLabel}`; // Format as "MM/DD/YYYY to MM/DD/YYYY"
     }
 
-        function aggregateWeeklyData(dailyData) {
-            let weeklyData = {};
-        
-            for (let date in dailyData) {
-                let weekLabel = getStartAndEndOfWeek(date); // Get week range as label
-                weeklyData[weekLabel] = (weeklyData[weekLabel] || 0) + dailyData[date];
-            }
-        
-            return weeklyData;
+    function aggregateWeeklyData(dailyData) {
+        let weeklyData = {};
+    
+        for (let date in dailyData) {
+            let weekLabel = getStartAndEndOfWeek(date); // Get week range as label
+            weeklyData[weekLabel] = (weeklyData[weekLabel] || 0) + dailyData[date];
         }
+    
+        return weeklyData;
+    }
         
-        function aggregateMonthlyData(dailyData) {
-            let monthlyData = {};
+    function aggregateMonthlyData(dailyData) {
+        let monthlyData = {};
+    
+        // Convert the dailyData into an array of objects with date and value
+        let dateList = Object.keys(dailyData).map(date => {
+            return {
+                date: new Date(date),  // Convert date string to Date object
+                value: dailyData[date]
+            };
+        });
         
-            // Convert the dailyData into an array of objects with date and value
-            let dateList = Object.keys(dailyData).map(date => {
-                return {
-                    date: new Date(date),  // Convert date string to Date object
-                    value: dailyData[date]
-                };
-            });
-        
-            // Sort the list by year, then month, then day
-            dateList.sort((a, b) => a.date - b.date); // Sorting by Date object
-        
-            // Aggregate the data by month and year in "YYYY/MM" format
-            let sortedMonthlyData = {};
-            dateList.forEach(item => {
-                // Format month as YYYY/MM
-                let monthLabel = `${item.date.getFullYear()}/${item.date.getMonth() + 1}`;
-                sortedMonthlyData[monthLabel] = (sortedMonthlyData[monthLabel] || 0) + item.value;
-            });
-        
-            // Sort the months based on year and month (important to ensure chronological order)
-            let sortedMonthKeys = Object.keys(sortedMonthlyData).sort((a, b) => {
-                let [yearA, monthA] = a.split('/');
-                let [yearB, monthB] = b.split('/');
-                
-                return (parseInt(yearA) - parseInt(yearB)) || (parseInt(monthA) - parseInt(monthB));
-            });
-        
-            // Create a new object with sorted keys
-            let finalSortedMonthlyData = {};
-            sortedMonthKeys.forEach(key => {
-                finalSortedMonthlyData[key] = sortedMonthlyData[key];
-            });
-        
-            // Output the result (sorted data by month-year in chronological order)
-            // console.log("Sorted Monthly Data:", finalSortedMonthlyData);
-        
-            return finalSortedMonthlyData;
-        }
+        // Sort the list by year, then month, then day
+        dateList.sort((a, b) => a.date - b.date); // Sorting by Date object
+    
+        // Aggregate the data by month and year in "YYYY/MM" format
+        let sortedMonthlyData = {};
+        dateList.forEach(item => {
+            // Format month as YYYY/MM
+            let monthLabel = `${item.date.getFullYear()}/${item.date.getMonth() + 1}`;
+            sortedMonthlyData[monthLabel] = (sortedMonthlyData[monthLabel] || 0) + item.value;
+        });
+    
+        // Sort the months based on year and month (important to ensure chronological order)
+        let sortedMonthKeys = Object.keys(sortedMonthlyData).sort((a, b) => {
+            let [yearA, monthA] = a.split('/');
+            let [yearB, monthB] = b.split('/');
+            
+            return (parseInt(yearA) - parseInt(yearB)) || (parseInt(monthA) - parseInt(monthB));
+        });
+    
+        // Create a new object with sorted keys
+        let finalSortedMonthlyData = {};
+        sortedMonthKeys.forEach(key => {
+            finalSortedMonthlyData[key] = sortedMonthlyData[key];
+        });
+    
+        // Output the result (sorted data by month-year in chronological order)
+        // console.log("Sorted Monthly Data:", finalSortedMonthlyData);
+    
+        return finalSortedMonthlyData;
+    }
 
 
     let weeklyData = aggregateWeeklyData(day);
     let monthlyData = aggregateMonthlyData(day);
 
-    console.log("Aggregated Weekly Datasafs:", monthlyData);
+    // Iterate through the daily data to find the highest record
+    for (let date in day) {
+        if (day[date] > progress.highest_record) {
+            progress.highest_record = day[date];
+        }
+    }
+
+    console.log(progress.highest_record);
+
+
 
     // Store the aggregated weekly and monthly data
-    chrome.storage.sync.set({ week: weeklyData, month: monthlyData });
+    chrome.storage.sync.set({ week: weeklyData, month: monthlyData, progress });
 });
 
 let chart;
@@ -258,7 +233,7 @@ function updateChart() {
 
 
 if (document.hidden === false) {
-    updateAchievements();
+    // updateAchievements();
     updateChart();
 }
 
@@ -395,23 +370,24 @@ document.addEventListener('visibilitychange', function() {
                 lastDate: null
             };
 
-            console.log(progress);
-
             const highestRecord = document.getElementById("highscore");
             const unitRecord = document.getElementById("score-unit");
 
             const highestStreak = document.getElementById("highstreak");
             const streak = document.getElementById("streak");
 
+            console.log(progress.current_streak);
 
             if (progress.highest_record < 60) {
                 highestRecord.innerHTML = progress.highest_record;
                 unitRecord.innerHTML = "secs";
             } else if (progress.highest_record < 3600) {
-                highestRecord.innerHTML = (progress.highest_record / 60).toFixed(1);
+                let minutes = progress.highest_record / 60;
+                highestRecord.innerHTML = minutes % 1 === 0 ? minutes.toFixed(0) : minutes.toFixed(1);
                 unitRecord.innerHTML = "mins";
             } else {
-                highestRecord.innerHTML = (progress.highest_record / 3600).toFixed(1);
+                let hours = progress.highest_record / 3600;
+                highestRecord.innerHTML = hours % 1 === 0 ? hours.toFixed(0) : hours.toFixed(1);
                 unitRecord.innerHTML = "hours";
             }
 
@@ -441,6 +417,33 @@ document.addEventListener('visibilitychange', function() {
         username.innerHTML = preferences.profile;
     });
 
+
+
+
+    // chrome.storage.sync.get("progress", (data) => {
+
+    //     let progress = data.progress || {
+    //         highest_record: 0,
+    //         highest_streak: 0,
+    //         current_streak: 0,
+    //         current_record: 0,
+    //         lastDate: null
+    //     };
+
+    //     // Update the progress object with the new data
+    //     progress.highest_streak = 1;
+    //     progress.current_streak = 1;
+    //     let yesterday = new Date();
+    //     yesterday.setDate(yesterday.getDate() - 1);
+    //     progress.lastDate = yesterday.toISOString().split('T')[0]
+
+
+
+    //     // Save the updated progress object in chrome storage
+    //     chrome.storage.sync.set({ progress }, () => {
+    //         console.log("Progress object has been updated:", progress);
+    //     });
+    // });
 
     
     

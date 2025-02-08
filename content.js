@@ -35,7 +35,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
-const today = new Date().toISOString().split('T')[0]; // Format: MM/DD/YYYY
 
 console.log("Initializing the model...");
 
@@ -212,7 +211,10 @@ async function predict() {
     if (!incorrectPostureDetected && !settingsDialog.open) {
         if (correctPostureDuration === 60) {
             chrome.storage.sync.get(["day", "progress"], (data) => {
+                const today = new Date().toISOString().split('T')[0];
+
                 let day = data.day || {}; 
+                console.log(day);
                 let progress = data.progress || {
                     highest_record: 0,
                     highest_streak: 0,
@@ -238,9 +240,10 @@ async function predict() {
                 if (progress.current_record > 30) {
                     if (progress.lastDate === yesterdayStr) {
                         progress.current_streak += 1; // Maintain streak if yesterday had data
-                    } else {
-                        progress.current_streak = 1; // Reset if no consecutive streak
+                    } else if (progress.lastDate !== today || progress.lastDate === null) {
+                        progress.current_streak = 1; // Reset streak if no data yesterday
                     }
+                    progress.lastDate = today;
                 }
     
                 // Update highest streak if beaten
@@ -248,11 +251,10 @@ async function predict() {
                     progress.highest_streak = progress.current_streak;
                 }
     
-                // Update last recorded date
-                progress.lastDate = today;
-    
-                // Save updated values
-                chrome.storage.sync.set({ day, progress });
+                  // Save updated values (make sure to save the 'day' and 'progress' objects)
+                chrome.storage.sync.set({ day, progress }, () => {
+                    console.log("Updated day and progress:", day, progress);
+                });
             });
     
             correctPostureDuration = 0; // Reset duration counter

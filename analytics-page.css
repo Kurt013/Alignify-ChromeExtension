@@ -286,6 +286,7 @@ body {
 .graph {
     max-width: 800px;
     width: 100%;
+    border-top: 1px solid lightgray;
     margin-inline: auto;
     overflow-x: auto;
     scrollbar-width: none;  

@@ -70,10 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const streak = document.getElementById("streak");
             streak.innerHTML = progress.current_streak;
+
+            console.log(progress.current_streak);
         });
     }
 
     updateAchievements();
+    setInterval(updateAchievements, 1000);
     
 });
 
