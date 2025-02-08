@@ -1,1 +1,67 @@
-This is a chrome extension that utilizes Teachable Machine Posenet to track or detect the posture of the user.
+
+Alignify: A Posture Corrector for Prolonged Sitting
+
+-----------------------------------------------------
+Alignify is an app designed to help users improve their posture during prolonged sitting sessions. The app tracks progress over time and provides motivational messages and posture tips to encourage healthier habits. It also features a visual chart to show daily, weekly, and monthly progress in maintaining good posture, as well as achievements for motivation.
+
+
+Features
+
+----------------------------------------------------
+// Track Daily, Weekly, and Monthly Posture Progress: Visualizes progress over time with a bar chart.
+Progress Stats: Displays achievements such as the highest record, current streak, and highest streak in terms of time spent in good posture.
+// Posture Reminders: Offers reminders for sitting posture, stretching, and hydration.
+// Motivational Messages: Provides encouraging messages to keep users on track.
+// Interactive Chart: Allows users to interact with the chart and view detailed data over different periods (Day, Week, Month).
+
+
+Technologies Used
+
+-----------------------------------------------------
+HTML5
+CSS3
+JavaScript
+Chrome Extensions API (chrome.storage for local storage)
+Chart.js for displaying data in graphs
+Teachable Machine
+
+
+
+Setup Instructions (Prerequisites)
+
+-----------------------------------------------------
+To run this app, you need:
+
+Google Chrome (or any Chromium-based browser) to install it as a Chrome Extension.
+Basic knowledge of JavaScript, HTML, and CSS if you'd like to modify or extend the functionality.
+Steps to Set Up the App Locally
+1. Download the Code
+Go to the GitHub Repository (replace with actual link).
+Click the Code button and select Download ZIP.
+Extract the downloaded ZIP folder to a location on your computer.
+2. Load the Extension in Chrome
+Open Google Chrome and go to the Extensions page:
+
+    Type chrome://extensions/ in the address bar and hit Enter.
+    Enable Developer Mode:
+
+    Toggle the Developer mode switch at the top-right of the Extensions page.
+    Load the Unpacked Extension:
+
+    Click the Load unpacked button.
+    Select the Downloaded Folder:
+
+    In the file explorer, navigate to the folder where you extracted the Alignify files.
+    Select the folder containing manifest.json and click Select Folder (on Windows) or Open (on macOS).
+
+
+Use the App
+
+-----------------------------------------------------
+// After loading the extension, you should see the Alignify icon in the Chrome toolbar.
+// Click on the Alignify extension icon to open the app.
+// The app will allow you to:
+// Track your posture progress over time.
+// View daily, weekly, and monthly progress.
+// Get motivational messages and posture reminders.
+// View your achievements, such as the highest record and current streak.
