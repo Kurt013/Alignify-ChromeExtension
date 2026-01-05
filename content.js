@@ -1,11 +1,12 @@
-let model, webcam, ctx, labelContainer, maxPredictions, postureState = false; // postureState to track if posture is incorrect
-let correctPostureDuration = 0; // Tracks the current record for the day
-let sensitivity; // Default sensitivity
-let volume; // Default volume
+let model, webcam, ctx, labelContainer, maxPredictions, postureState = false;
+let correctPostureStartTime = null;
+let totalCorrectPostureDuration = 0; // in milliseconds
+let sensitivity;  
+let volume;
 let audioPath;
 let previousAudioPath = "";
 const checkStatus = document.getElementById("check-icon");
-// const checkPopup = document.getElementById("setting-popup");
+
 
 chrome.storage.sync.get(["preferences"], (result) => {
 
@@ -19,7 +20,7 @@ chrome.storage.sync.get(["preferences"], (result) => {
     volume = parseFloat(preferences.sound);
 });
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
+chrome.storage.onChanged.addListener((changes) => {
     if (changes.preferences) {
         let newPreferences = changes.preferences.newValue;
 
@@ -28,15 +29,12 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
             console.log("Updated Sensitivity:", sensitivity);
         }
 
-        if (newPreferences.sound !== undefined) {  // Correct the key from "volume" to "sound"
-            volume = parseFloat(newPreferences.sound) || 1.0; // Ensure valid volume
+        if (newPreferences.sound !== undefined) {
+            volume = parseFloat(newPreferences.sound) || 1.0;
             console.log("Updated Volume:", volume);
         }
     }
 });
-
-
-console.log("Initializing the model...");
 
 async function init() {
     const modelURL = chrome.runtime.getURL('my_model/model.json');
@@ -47,10 +45,8 @@ async function init() {
     audioElement.id = 'alertSound';
     document.body.appendChild(audioElement);
 
-
     const popupElement = document.createElement('dialog');
     const warningLogo = chrome.runtime.getURL('./icons/warning.svg');
-
 
     popupElement.id = 'notif-popup';
     popupElement.className = 'popup-container';
@@ -65,9 +61,9 @@ async function init() {
             </div>
         </div>
     `;
-    document.body.appendChild(popupElement); // Add dialog to body
+    document.body.appendChild(popupElement);
 
-    const labelElement = document.createElement('div');  // Create a wrapper div
+    const labelElement = document.createElement('div');
     labelElement.id = 'param-popup';
     labelElement.classList.add('param-popup');
     labelElement.innerHTML = `
@@ -82,36 +78,31 @@ async function init() {
     `;
 
 
-    document.body.appendChild(labelElement);  // Append the wrapper to the body
+    document.body.appendChild(labelElement); 
     
-    // Load the model and metadata
     model = await tmPose.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
 
     const canvas = document.getElementById("canvas");
 
-    // Convenience function to setup a webcam
-    const flip = true; // whether to flip the webcam
-    webcam = new tmPose.Webcam(canvas.width, canvas.height, flip); // width, height, flip
-    await webcam.setup(); // request access to the webcam
+    const flip = true; 
+    webcam = new tmPose.Webcam(canvas.width, canvas.height, flip); 
+    await webcam.setup();
     await webcam.play();
-    window.requestAnimationFrame(loop);
 
-    // At this point, canvas has already been appended to the body
+    setInterval(loop, 3000);
+
     ctx = canvas.getContext("2d");
     labelContainer = document.getElementById("label-container");
 
-    // Create label elements for each class prediction
-    for (let i = 0; i < maxPredictions; i++) { // and class labels
+    for (let i = 0; i < maxPredictions; i++) {
         const labelDiv = document.createElement("div");
         labelDiv.classList.add("param");
         labelContainer.appendChild(labelDiv);
     }
-
-    
 }
 
-async function loop(timestamp) {
+async function loop() {
     const settingsPopup = document.getElementById("setting-popup");
     const paramPopup = document.getElementById("param-popup");
 
@@ -124,17 +115,12 @@ async function loop(timestamp) {
 
     webcam.update();
     await predict();
-    window.requestAnimationFrame(loop);
 }   
 
 async function predict() {
-    // Prediction #1: run input through posenet
     const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-
-    // Prediction #2: run input through teachable machine classification model
     const prediction = await model.predict(posenetOutput);
 
-    // Check for "incorrect posture" in the predictions
     let incorrectPostureDetected = false;
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction = `
@@ -167,7 +153,6 @@ async function predict() {
     
     }
 
-    // Function to toggle visibility
     function updatePopupVisibility(show) {
         const settingsPopup = document.getElementById("setting-popup");
 
@@ -199,7 +184,6 @@ async function predict() {
         checkStatus.classList.add('hide-check');
     }
 
-    // Show or hide the dialog based on incorrect posture detection
     if (incorrectPostureDetected && !postureState) {
         postureState = true; 
         showDialog(); 
@@ -209,58 +193,58 @@ async function predict() {
     }
 
     if (!incorrectPostureDetected && !settingsDialog.open) {
-        if (correctPostureDuration === 60) {
-            chrome.storage.sync.get(["day", "progress"], (data) => {
-                const today = new Date().toISOString().split('T')[0];
-
-                let day = data.day || {}; 
-                console.log(day);
-                let progress = data.progress || {
-                    highest_record: 0,
-                    highest_streak: 0,
-                    current_streak: 0,
-                    current_record: 0,
-                    lastDate: null
-                };
-    
-    
-                let yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                let yesterdayStr = yesterday.toISOString().split('T')[0];
-    
-                // Update the day record (in seconds)
-                day[today] = (day[today] || 0) + 1; 
-
-                progress.current_record = day[today]; // Update current record
-    
-                if (progress.current_record > progress.highest_record) {
-                    progress.highest_record = progress.current_record;
-                }
-    
-                if (progress.current_record > 30) {
-                    if (progress.lastDate === yesterdayStr) {
-                        progress.current_streak += 1; // Maintain streak if yesterday had data
-                    } else if (progress.lastDate !== today || progress.lastDate === null) {
-                        progress.current_streak = 1; // Reset streak if no data yesterday
-                    }
-                    progress.lastDate = today;
-                }
-    
-                // Update highest streak if beaten
-                if (progress.current_streak > progress.highest_streak) {
-                    progress.highest_streak = progress.current_streak;
-                }
-    
-                  // Save updated values (make sure to save the 'day' and 'progress' objects)
-                chrome.storage.sync.set({ day, progress }, () => {
-                    console.log("Updated day and progress:", day, progress);
-                });
-            });
-    
-            correctPostureDuration = 0; // Reset duration counter
+        if (correctPostureStartTime === null) {
+            correctPostureStartTime = Date.now(); // Start timing
         }
-    
-        correctPostureDuration += 1; // Increment frame count
+
+        chrome.storage.sync.get(["day", "progress"], (data) => {
+            const today = new Date().toISOString().split('T')[0];
+
+            let day = data.day || {}; 
+
+            let progress = data.progress || {
+                highest_record: 0,
+                highest_streak: 0,
+                current_streak: 0,
+                current_record: 0,
+                lastDate: null
+            };
+
+            let yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            let yesterdayStr = yesterday.toISOString().split('T')[0];
+
+            day[today] = (day[today] || 0) + 1; 
+
+            progress.current_record = day[today];
+
+            if (progress.current_record > progress.highest_record) {
+                progress.highest_record = progress.current_record;
+            }
+
+            if (progress.current_record > 30) {
+                if (progress.lastDate === yesterdayStr) {
+                    progress.current_streak += 1;
+                } else if (progress.lastDate !== today || progress.lastDate === null) {
+                    progress.current_streak = 1;
+                }
+                progress.lastDate = today;
+            }
+
+            if (progress.current_streak > progress.highest_streak) {
+                progress.highest_streak = progress.current_streak;
+            }
+
+            chrome.storage.sync.set({ day, progress }, () => {
+                console.log("Updated day and progress:", day, progress);
+            });
+        });
+    } else {
+        if (correctPostureStartTime !== null) {
+
+            totalCorrectPostureDuration += Date.now() - correctPostureStartTime;
+            correctPostureStartTime = null;
+        }
     }
     
 
@@ -270,7 +254,7 @@ async function predict() {
 function drawPose(pose) {
     if (webcam.canvas) {
         ctx.drawImage(webcam.canvas, 0, 0);
-        // draw the keypoints and skeleton
+
         if (pose) {
             const minPartConfidence = 0.5;
             tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
@@ -281,43 +265,39 @@ function drawPose(pose) {
 
 function showDialog() {
     const popup = document.getElementById('notif-popup');
-    playSound(); // Play the alert sound
-    popup.showModal(); // Show the dialog box
+    playSound();
+    popup.showModal();
 }
 
 function hideDialog() {
     const popup = document.getElementById('notif-popup');
-    popup.close(); // Close the dialog box
+    popup.close(); 
 }
 
 
-// New function to handle audio playback and popup update
 function setAudioAndPopup(audioFile, headerText, contentText) {
     const newAudioPath = chrome.runtime.getURL(`assets/${audioFile}`);
     
     if (previousAudioPath !== newAudioPath) {
-        previousAudioPath = newAudioPath; // Update the previous audio path
+        previousAudioPath = newAudioPath;
         
-        audioPath = newAudioPath; // Set the new audio path
+        audioPath = newAudioPath;
         document.getElementById("header-warning").innerText = headerText;
         document.getElementById("content-warning").innerText = contentText;
         
-        playSound(); // Play the audio when the path changes
+        playSound();
     }
 }
 
-// Function to play the alert sound
 function playSound() {
     const sound = document.getElementById("alertSound");
     if (sound) {
-        // Pause and reset the current audio if it's playing
         sound.pause();
-        sound.currentTime = 0; // Reset audio to start
+        sound.currentTime = 0;
 
-        // Set the new audio source and play it
         sound.src = audioPath;
-        sound.volume = volume; // Use the saved volume setting
-        sound.play(); // Play the audio
+        sound.volume = volume;
+        sound.play();
     }
 }
 
@@ -327,7 +307,4 @@ function pauseSound() {
     sound.currentTime = 0;
 }
 
-
-// Call the initialize function to load the model and setup everything
 init();
-
