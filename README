@@ -1,67 +1,84 @@
+# 📏 Alignify: A Posture Corrector for Prolonged Sitting
 
-Alignify: A Posture Corrector for Prolonged Sitting
+Chrome extension (Manifest V3) that helps people who sit for long periods improve posture through progress tracking, reminders, and motivation.
 
------------------------------------------------------
-Alignify is an app designed to help users improve their posture during prolonged sitting sessions. The app tracks progress over time and provides motivational messages and posture tips to encourage healthier habits. It also features a visual chart to show daily, weekly, and monthly progress in maintaining good posture, as well as achievements for motivation.
+---
 
+## 📸 Demo
 
-Features
+![Chrome Extension UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/extension-ui.png)  
+![Popup UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/popup-ui.png)  
+![Analytics Dashboard UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/analytics-ui.png)  
 
-----------------------------------------------------
-// Track Daily, Weekly, and Monthly Posture Progress: Visualizes progress over time with a bar chart.
-Progress Stats: Displays achievements such as the highest record, current streak, and highest streak in terms of time spent in good posture.
-// Posture Reminders: Offers reminders for sitting posture, stretching, and hydration.
-// Motivational Messages: Provides encouraging messages to keep users on track.
-// Interactive Chart: Allows users to interact with the chart and view detailed data over different periods (Day, Week, Month).
+---
 
+## 📦 Load the Extension in Chrome
 
-Technologies Used
+Download the repository as a ZIP file and load it as a Chrome extension:
 
------------------------------------------------------
-HTML5
-CSS3
-JavaScript
-Chrome Extensions API (chrome.storage for local storage)
-Chart.js for displaying data in graphs
-Teachable Machine
+1. Open Google Chrome and go to:
+    chrome://extensions/
+2. Enable **Developer mode** (top-right corner).
+3. Click **Load unpacked**.
+4. Select the folder containing `manifest.json`.
 
+Once loaded, the Alignify icon will appear in the Chrome toolbar.
 
+---
 
-Setup Instructions (Prerequisites)
+## 🛠 Usage
 
------------------------------------------------------
-To run this app, you need:
+1. Click the **Alignify extension icon** in the Chrome toolbar.
+2. Use the app to:
+   - Track posture progress over time
+   - View daily, weekly, and monthly statistics
+   - Receive posture, stretching, and hydration reminders
+   - See motivational messages and achievements
 
-Google Chrome (or any Chromium-based browser) to install it as a Chrome Extension.
-Basic knowledge of JavaScript, HTML, and CSS if you'd like to modify or extend the functionality.
-Steps to Set Up the App Locally
-1. Download the Code
-Go to the GitHub Repository (replace with actual link).
-Click the Code button and select Download ZIP.
-Extract the downloaded ZIP folder to a location on your computer.
-2. Load the Extension in Chrome
-Open Google Chrome and go to the Extensions page:
+---
 
-    Type chrome://extensions/ in the address bar and hit Enter.
-    Enable Developer Mode:
+## ✨ Features
 
-    Toggle the Developer mode switch at the top-right of the Extensions page.
-    Load the Unpacked Extension:
+- Track daily, weekly, and monthly posture progress  
+- Visual bar chart for posture history  
+- Progress stats (highest record, current streak, highest streak)  
+- Posture, stretching, and hydration reminders  
+- Motivational messages to encourage healthy habits  
+- Interactive charts with Day / Week / Month views  
 
-    Click the Load unpacked button.
-    Select the Downloaded Folder:
+---
 
-    In the file explorer, navigate to the folder where you extracted the Alignify files.
-    Select the folder containing manifest.json and click Select Folder (on Windows) or Open (on macOS).
+## 🧠 What I Learned / Project Experience
 
+- Learned how to build a **Chrome Extension using Manifest V3** through reading official docs
+- Implemented **progress tracking and reminders** with Chrome Storage API
+- Gained experience with **Chart.js for data visualization**
+- Explored **machine learning integration** with Teachable Machine
+- Improved skills in **HTML, CSS, and JavaScript** for interactive UIs
 
-Use the App
+Overall, building this extension was fun but challenging. Integrating Teachable Machine was tricky because there is limited documentation for Chrome Extensions. After hours of experimenting, I found a solution: **download the necessary model files locally** and configure `manifest.json` to point to them.
 
------------------------------------------------------
-// After loading the extension, you should see the Alignify icon in the Chrome toolbar.
-// Click on the Alignify extension icon to open the app.
-// The app will allow you to:
-// Track your posture progress over time.
-// View daily, weekly, and monthly progress.
-// Get motivational messages and posture reminders.
-// View your achievements, such as the highest record and current streak.
+I also faced challenges with **audio permissions**, which were resolved by explicitly configuring them in `manifest.json`. This project taught me that **Manifest V3 is stricter than V2**, which prevents things like loading external scripts from a CDN, requiring workarounds like local hosting of model files.
+
+---
+
+## 🧰 Tech Stack
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white&style=for-the-badge) 
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white&style=for-the-badge) 
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black&style=for-the-badge) 
+![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-4285F4?logo=googlechrome&logoColor=white&style=for-the-badge)
+![Teachable Machine](https://img.shields.io/badge/Teachable_Machine-34A853?logo=google&logoColor=white&style=for-the-badge)
+
+---
+
+## 🎨 Design Prototype
+
+View the full Figma design here:  
+[Open Figma](https://www.figma.com/design/L6eE9GTRIRah5uk5FGiZjC/ALIGNIFY-UI?node-id=20-2&m=dev)
+
+---
+
+## 📄 License
+
+See [LICENSE](LICENSE) for full details.
