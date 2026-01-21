@@ -6,9 +6,9 @@ Chrome extension (Manifest V3) that helps people who sit for long periods improv
 
 ## 📸 Demo
 
-![Chrome Extension UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/extension-ui.png)  
-![Popup UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/popup-ui.png)  
-![Analytics Dashboard UI](https://raw.githubusercontent.com/Kurt013/gacha-pull-logger/refs/heads/main/assets/analytics-ui.png)  
+![Chrome Extension UI](https://raw.githubusercontent.com/Kurt013/Alignify-ChromeExtension/refs/heads/main/assets/extension-ui.png)  
+![Popup UI](https://raw.githubusercontent.com/Kurt013/Alignify-ChromeExtension/refs/heads/main/assets/popup-ui.png)  
+![Analytics Dashboard UI](https://raw.githubusercontent.com/Kurt013/Alignify-ChromeExtension/refs/heads/main/assets/analytics-ui.png)  
 
 ---
 
