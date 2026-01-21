@@ -48,7 +48,7 @@ Once loaded, the Alignify icon will appear in the Chrome toolbar.
 
 ---
 
-## 🧠 What I Learned / Project Experience
+## 🧠 What I Learned
 
 - Learned how to build a **Chrome Extension using Manifest V3** through reading official docs
 - Implemented **progress tracking and reminders** with Chrome Storage API
